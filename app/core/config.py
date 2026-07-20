@@ -17,6 +17,12 @@ class Settings(BaseSettings):
     ALGORITHM: str
     JWT_TOKEN_EXPIRE_MINUTES: int
 
+    SMTP_HOST: str
+    SMTP_PORT: int
+    SMTP_USER: str
+    SMTP_PASSWORD: str
+    VERIFICATION_LINK: str
+
     model_config = ConfigDict(env_file = '.env', case_sensitive = True)
 
 settings = Settings()

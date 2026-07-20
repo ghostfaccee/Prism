@@ -1,7 +1,8 @@
 from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.repositories import UserRepository
-from app.utils import hash_password, verify_password, create_jwt_token
+from app.utils import hash_password, verify_password, create_jwt_token, generate_verification_token
+from app.tasks.email import send_verification_email
 from app.exceptions import user as user_exc
 from app.schemas import *
 from app.models import User
@@ -14,18 +15,22 @@ class AuthService:
         existing = await self.repo.get_by_username(data.username)
         if existing:
             raise user_exc.UsernameExistsError(data.username)
-
+        token = None
         if data.email:
             existing = await self.repo.get_by_email(data.email)
             if existing:
                 raise user_exc.EmailExistsError(data.email)
+            else:
+                token = generate_verification_token()
+                send_verification_email.delay(data.email, token)
         
         hashed_pwd = hash_password(data.password)
         user = User(
             username = data.username,
             email = data.email,
             hashed_password = hashed_pwd,
-            is_active = False
+            is_active = False,
+            verification_token = token
         )
         return await self.repo.create(user)
 

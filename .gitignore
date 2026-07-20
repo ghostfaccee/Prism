@@ -2,3 +2,4 @@
 __pycache__
 celery-info.md
 .venv
+smtp-setup.md
