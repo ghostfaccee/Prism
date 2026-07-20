@@ -1,0 +1,14 @@
+import uuid
+from sqlalchemy import Column, String, Boolean
+from sqlalchemy.dialects.postgresql import UUID
+from app.core import Base
+
+class User(Base):
+    __tablename__ = 'users'
+
+    user_id = Column(UUID(as_uuid = True), primary_key = True, default = uuid.uuid4, index = True)
+    username = Column(String(20), unique = True, index = True, nullable = False)
+    email = Column(String(255), unique = True, nullable = True, index = True)
+    hashed_password = Column(String(255), nullable = False)
+    is_active = Column(Boolean, default = False) # For email verification. A user is considered active if their email is verified.
+
