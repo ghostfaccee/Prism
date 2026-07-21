@@ -44,3 +44,17 @@ class UserRepository:
         user = await self.db.execute(select(User).where(User.email == email))
         return user.scalar_one_or_none()
     
+    async def get_by_verification_token(self, token: str) -> Optional[User]:
+        user = await self.db.execute(select(User).where(User.verification_token == token))
+        return user.scalar_one_or_none()
+
+    async def activate_user(self, user_id: UUID) -> Optional[User]:
+        user = await self.get_by_id(user_id)
+        if not user:
+            return None
+        user.is_active = True
+        user.verification_token = None
+        await self.db.commit()
+        await self.db.refresh(user)
+        return user
+    

@@ -51,3 +51,19 @@ class AuthService:
         if not await self.repo.delete(user_id):
             raise user_exc.UserDoesNotExists()
         return None
+
+class VerificationService:
+    def __init__(self, db: AsyncSession) -> None:
+        self.repo = UserRepository(db)
+    
+    async def verify_email(self, token: str) -> VerificationResponse:
+        user = await self.repo.get_by_verification_token(token)
+
+        if not user:
+            raise user_exc.InvalidOrExpiredTokenError()
+        
+        if user.is_active:
+            raise user_exc.EmailAlreadyVerifiedError()
+
+        return await self.repo.activate_user(user.user_id)
+

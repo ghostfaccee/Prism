@@ -11,5 +11,5 @@ class User(Base):
     email = Column(String(255), unique = True, nullable = True, index = True)
     hashed_password = Column(String(255), nullable = False)
     is_active = Column(Boolean, default = False) # For email verification. A user is considered active if their email is verified.
-    verification_token = Column(String(255), nullable = True, unique = False, index = True) # Token for email confirmation.
+    verification_token = Column(String(255), nullable = True, unique = True, index = True) # Token for email confirmation.
 

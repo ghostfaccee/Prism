@@ -23,4 +23,11 @@ class UserDoesNotExists(HTTPException):
 class CouldNotValidateCredentialsError(HTTPException):
     def __init__(self):
         return super().__init__(status.HTTP_401_UNAUTHORIZED, 'Could not validate credentials', {'WWW-Authenticate': 'Bearer'})
-    
+
+class InvalidOrExpiredTokenError(HTTPException):
+    def __init__(self):
+        return super().__init__(status.HTTP_404_NOT_FOUND, 'Invalid or expired token')
+
+class EmailAlreadyVerifiedError(HTTPException):
+    def __init__(self):
+        return super().__init__(status.HTTP_400_BAD_REQUEST, 'Email already verified')
