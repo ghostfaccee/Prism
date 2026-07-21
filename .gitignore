@@ -1,0 +1,6 @@
+.env
+__pycache__
+celery-info.md
+.venv
+smtp-setup.md
+*.pyc
