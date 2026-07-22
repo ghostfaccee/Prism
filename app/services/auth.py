@@ -34,7 +34,7 @@ class AuthService:
         )
         return await self.repo.create(user)
 
-    async def login(self, data: UserLogin) -> TokenResponse: # TODO: Add email verification if the email is confirmed.
+    async def login(self, data: UserLogin) -> TokenResponse:
         exists = await self.repo.get_by_username(data.username)
         if not exists:
             raise user_exc.UsernameDoesNotExistsError(data.username)

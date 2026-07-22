@@ -14,11 +14,11 @@ class UserRepository:
         await self.db.refresh(user)
         return user
     
-    async def update(self, user_id: UUID, data: User) -> Optional[User]:
+    async def update(self, user_id: UUID, data: dict) -> Optional[User]:
         user = await self.get_by_id(user_id)
         if not user:
             return None
-        for key, value in data.model_dump(exclude_unset = True).items():
+        for key, value in data.items():
             setattr(user, key, value)
         await self.db.commit()
         await self.db.refresh(user)

@@ -7,14 +7,6 @@ class UserRegister(BaseModel):
     email: Optional[EmailStr] = None
     password: str = Field(..., min_length = 5)
 
-class UserUpdate(BaseModel):
-    username: Optional[str]
-    email: Optional[EmailStr]
-
-class UpdatePassword(BaseModel):
-    old_pass: str
-    new_pass: str = Field(..., min_length = 5)
-
 class UserLogin(BaseModel):
     username: str
     password: str
@@ -22,8 +14,3 @@ class UserLogin(BaseModel):
 class TokenResponse(BaseModel):
     access_token: str
     token_type: str = 'bearer'
-
-class UserResponse(BaseModel):
-    user_id: UUID
-    username: str
-    email: Optional[str]

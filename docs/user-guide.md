@@ -4,14 +4,21 @@
 
 <a href="#authentication-and-verification">Authentication and verification</a>
 
-## Authentication and verification
-Prism uses **JWT** for authentication and **email verification** for confirm user account.
-### Registration, login, verification (/v1/register)
-1. The user specifies their username and password, and optionally their email address.
-2. If an email address is specified, a special token is generated and an email with a link to the token is sent to the user's email address.
-3. When an email is sent but the user doesn't click the link, the account is created. The is_active field is set to False by default and will remain so until the user clicks the link provided in the email. Email sending and registration are asynchronous.
-4. Next, the user needs to log in to their account (`/v1/login`) to receive a JWT token. This token will be needed to confirm the account by clicking the link in the email.
-5. The user then follows the link, indicating their jvt token in the header in the following format: `Authorization: Bearer {token}`
-6. After that, you'll receive a verified account if you registered with an email address, and an unverified account if you didn't provide one. This isn't a problem, as you can update your account later and add an email address, after which you'll need to verify it (this is still in development ;/)
+## Authentication and Verification
+Prism uses **JWT** for authentication and **email verification** to confirm the user account.
 
-**Please note that the steps required to confirm the email specified during registration must be performed in the following order: `Registration -> Login -> Confirmation (in the JWT token header)`.**
+### Registration, Login, Verification (/v1/register)
+1. The user provides their username and password, and, if necessary, their email address.
+
+2. If an email address is provided, a special token is generated (used for the /v1/verification/{token} endpoint), and an email with a link to verify the token is sent to the user's email address.
+
+3. If the email is sent but the user does not click the link, the account is created. The is_active field is set to False by default and will remain so until the user clicks the link provided in the email. Email sending and registration are asynchronous.
+
+4. After registration, the user logs in (/v1/login) and receives a JWT token. When clicking a link in the email, this token is transmitted in the Authorization header so the server can identify the user and activate the account.
+
+5. The user then clicks the link, specifying their JWT token in the header in the following format: `Authorization: Bearer {token}`
+
+6. You will then receive a confirmed account if you registered with an email address, and an unconfirmed account if you did not provide one. This is not a problem, as you can update your account at the /v1/me endpoint (patch request) and specify your new email address there, after which you will receive an email with a confirmation link.
+
+**Please note that the steps required to confirm the email address specified during registration must be completed in the following order: `Registration (/v1/register) -> Login (/v1/login) -> Confirmation (link in email) (in the JWT token header)`.**
+
