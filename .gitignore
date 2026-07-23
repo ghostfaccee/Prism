@@ -4,3 +4,5 @@ celery-info.md
 .venv
 smtp-setup.md
 alembic.md
+mocks-notes.md
+.pytest_cache

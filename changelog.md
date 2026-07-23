@@ -19,5 +19,14 @@
 - now, if you didn't specify your location during registration, you can update your details and specify it there
 - you can also update your password from the old one to the new one
 
+## v0.2.1 - 23.07.2026
+### Added & changed
+- first e2e test for auth flow (registration and email verification)
+- docker profiles have been added to run separate scripts (development and testing - `test`, production - `prod`)
+- a test service for quick access to data that is only needed for testing
+- the .env file has been updated and new environment variables have been added
+### Notes
+- you can view the launches of individual scripts in readme.md
+
 ## to be continued :)
 ...

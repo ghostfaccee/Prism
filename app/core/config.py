@@ -2,10 +2,9 @@ from pydantic import ConfigDict
 from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
-    POSTGRES_USER: str
-    POSTGRES_PASSWORD: str
-    POSTGRES_DB: str
     POSTGRES_URL: str
+
+    TEST_POSTGRES_URL: str
 
     REDIS_URL: str
 
@@ -23,6 +22,6 @@ class Settings(BaseSettings):
     SMTP_PASSWORD: str
     VERIFICATION_LINK: str
 
-    model_config = ConfigDict(env_file = '.env', case_sensitive = True)
+    model_config = ConfigDict(env_file = '.env', case_sensitive = True, extra = 'ignore')
 
 settings = Settings()
