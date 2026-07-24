@@ -28,5 +28,10 @@
 ### Notes
 - you can view the launches of individual scripts in readme.md
 
+## v0.2.2 - 24.07.2026
+### Added
+- unit tests for authorization and user
+- fixed event loop pytest and asyncpg error
+
 ## to be continued :)
 ...

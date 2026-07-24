@@ -1,4 +1,3 @@
-from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.repositories import UserRepository
 from app.utils import hash_password, verify_password, create_jwt_token, generate_verification_token
@@ -42,15 +41,6 @@ class AuthService:
             raise user_exc.InvalidPassword()
         token = create_jwt_token({'sub': str(exists.user_id)})
         return TokenResponse(access_token = token)
-
-    async def update_user(self, user_id: UUID, data: UserUpdate) -> User:
-        updated = await self.repo.update(user_id, data)
-        return updated
-    
-    async def delete(self, user_id: UUID) -> None:
-        if not await self.repo.delete(user_id):
-            raise user_exc.UserDoesNotExists()
-        return None
 
 class VerificationService:
     def __init__(self, db: AsyncSession) -> None:

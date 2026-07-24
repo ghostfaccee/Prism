@@ -21,7 +21,7 @@ class UserService:
     async def get_by_username(self, username: str) -> Optional[User]:
         user = await self.repo.get_by_username(username)
         if not user:
-            raise user_exc.UsernameDoesNotExistsError()
+            raise user_exc.UsernameDoesNotExistsError(username)
         return user
     
     async def update_user(self, user_id: UUID, data: UserUpdate) -> User:
@@ -32,12 +32,12 @@ class UserService:
         if data.username is not None and data.username.strip() != "" and data.username != user.username:
             existing = await self.repo.get_by_username(data.username)
             if existing:
-                raise user_exc.UsernameExistsError()
+                raise user_exc.UsernameExistsError(data.username)
             updated_data['username'] = data.username
         if data.email is not None and data.email != user.email:
             existing = await self.repo.get_by_email(data.email)
             if existing:
-                raise user_exc.EmailExistsError()
+                raise user_exc.EmailExistsError(data.email)
             token = generate_verification_token()
             updated_data["email"] = data.email
             updated_data["verification_token"] = token
@@ -56,3 +56,9 @@ class UserService:
             raise user_exc.InvalidPassword()
         updated_data['hashed_password'] = hash_password(data.new_pass)
         return await self.repo.update(user_id, updated_data)
+
+    async def delete(self, user_id: UUID) -> None:
+        if not await self.repo.delete(user_id):
+            raise user_exc.UserDoesNotExists()
+        return None
+    

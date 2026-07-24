@@ -5,6 +5,8 @@ from unittest.mock import patch
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 from app.core import Base, get_db, settings
 from app.repositories import UserRepository
+from app.services import UserService, AuthService, VerificationService
+from app.services.tests import UserTestsService
 from app.models import User
 from app.utils import hash_password
 
@@ -22,6 +24,17 @@ async def override_get_db() -> AsyncGenerator[AsyncSession, None]:
 
 app.dependency_overrides[get_db] = override_get_db
 
+from sqlalchemy.pool import NullPool
+
+@pytest.fixture(scope="session")
+async def pg_engine():
+    engine = create_async_engine(
+        TEST_DATABASE_URL,
+        poolclass=NullPool
+    )
+    yield engine
+    await engine.dispose()
+
 @pytest.fixture(autouse = True)
 async def setup_db() -> AsyncGenerator[None, None]:
     async with engine.begin() as conn:
@@ -31,9 +44,15 @@ async def setup_db() -> AsyncGenerator[None, None]:
         await conn.run_sync(Base.metadata.drop_all)
 
 @pytest.fixture
-async def db_session() -> AsyncGenerator[AsyncSession, None]:
-    async with TestingSessionLocal() as session:
+async def db_session(pg_engine):
+    async with pg_engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    
+    async with AsyncSession(pg_engine, expire_on_commit=False) as session:
         yield session
+    
+    async with pg_engine.begin() as conn:
+        await conn.run_sync(Base.metadata.drop_all)
 
 @pytest.fixture
 async def client() -> AsyncGenerator[AsyncClient, None]:
@@ -87,3 +106,29 @@ async def test_user(db_session: AsyncSession) -> User:
         hashed_password = hash_password('testpass123')
     )
     return await repo.create(user)
+
+@pytest.fixture
+async def test_user2_for_test_user(db_session: AsyncSession) -> User:
+    repo = UserRepository(db_session)
+    user = User(
+        username = 'testuser2',
+        email = 'testuser2@mail.com',
+        hashed_password = hash_password('testpass123')
+    )
+    return await repo.create(user)
+
+@pytest.fixture
+async def user_service(db_session: AsyncSession) -> UserService:
+    return UserService(db_session)
+
+@pytest.fixture
+async def auth_service(db_session: AsyncSession) -> AuthService:
+    return AuthService(db_session)
+
+@pytest.fixture
+async def verification_service(db_session: AsyncSession) -> VerificationService:
+    return VerificationService(db_session)
+
+@pytest.fixture
+async def user_tests_service(db_session: AsyncSession) -> UserTestsService:
+    return UserTestsService(db_session)

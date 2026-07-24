@@ -6,3 +6,5 @@ smtp-setup.md
 alembic.md
 mocks-notes.md
 .pytest_cache
+pytest.md
+refactoring-ideas.md
