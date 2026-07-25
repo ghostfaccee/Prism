@@ -63,7 +63,7 @@ async def client() -> AsyncGenerator[AsyncClient, None]:
 
 @pytest.fixture
 async def full_auth(client: AsyncClient) -> str:
-    username = f'testuser'
+    username = 'testuser'
     password = 'testpass123'
     email = f'{username}@mail.com'
 
@@ -82,7 +82,7 @@ async def full_auth(client: AsyncClient) -> str:
 
 @pytest.fixture
 async def auth_without_email(client: AsyncClient) -> str:
-    username = f'testuser'
+    username = 'testuser'
     password = 'testpass123'
     
     register_response = await client.post('/v1/auth/register', json = {'username' : username, 'password' : password})

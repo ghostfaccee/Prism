@@ -1,9 +1,30 @@
 # Endpoints
 
-**Prism** is an API that collects data from various services and displays a feed of interesting events to the user. This section contains all the endpoints necessary for comfortable use. You can also view the api documentation at `http://127.0.0.1:8000/docs` if prism is already running. Enjoy your experience :).
+**Prism** is an API that collects data from various services and displays a feed of interesting events to the user. This section contains all the endpoints necessary for comfortable use. You can also view the api documentation at `http://127.0.0.1:8000/docs` or `http://127.0.0.1:8000/redoc` if prism is already running. Enjoy your experience :).
+
+<details>
+  <summary>Menu</summary>
+  <ol>
+    <li>
+      <a href="#v1-endpoints">v1 endpoints</a>
+      <ul>
+        <li><a href="#v1---main-page--get">Main Page (/v1/) | GET</a></li>
+        <li><a href="#v1authregister---register--post">Register (/v1/register) | POST</a></li>
+        <li><a href="#v1authlogin---login--post">Login (/v1/login) | POST</a></li>
+        <li><a href="#v1verifytoken---verification--get">Verification (/v1/verify/{token} | GET</a></li>
+        <li><a href="#v1me---get-current-user--get">Get current user (/v1/me) | GET</a></li>
+        <li><a href="#v1me---update-current-user--patch">Update current user (/v1/me) | PATCH</a></li>
+        <li><a href="#v1me---deleting-the-current-user--delete">Delete current user (/v1/me) | DELETE</a></li>
+        <li><a href="#v1mepassword---change-password--patch">Change password (/v1/me/password) | PATCH</a></li>
+        <li><a href="#v1userusernameusername---get-user--get">Get user by username (/v1/user/username/{username}) | GET</a></li>
+        <li><a href="#v1useruuiduser_uuid---get-user--get">Get user by uuid (/v1/user/uuid/{uuid} | GET</a></li>
+      </ul>
+    </li>
+  </ol>
+</details>
 
 ## `v1` endpoints
-### `/v1/` - Main Page
+### `/v1/` - Main Page | GET
 Just a stub that returns the following json:
 ```json
 {
@@ -117,6 +138,17 @@ If no data is specified during the update, the user data will not be changed.
 }
 ```
 
+### `/v1/me` - Deleting the current user | DELETE
+Deletes a user account. Requires a jwt token.
+
+* Input data format: None (jwt token is required in headers)
+```headers
+Authorization: Bearer {your jwt token}
+```
+
+* Output data format: None
+* Default status: 204 no content
+
 ### `/v1/me/password` - Change password | PATCH
 Updates the password. Requires a jwt token.
 
@@ -142,10 +174,10 @@ Authorization: Bearer {your jwt token}
 }
 ```
 
-### `/v1/user/uuid/{user_uuid}` - Get user | GET
-Allows you to globally find a user by their uuid.
+### `/v1/user/username/{username}` - Get user | GET
+Allows you to globally find a user by their username.
 
-`user_uuid` - user uuid : /
+`username` - username : /
 
 * Input data format: None (jwt token is required in headers)
 ```headers
@@ -163,10 +195,10 @@ Authorization: Bearer {your jwt token}
 }
 ```
 
-### `/v1/user/username/{username}` - Get user | GET
-Allows you to globally find a user by their username.
+### `/v1/user/uuid/{user_uuid}` - Get user | GET
+Allows you to globally find a user by their uuid.
 
-`username` - username : /
+`user_uuid` - user uuid : /
 
 * Input data format: None (jwt token is required in headers)
 ```headers

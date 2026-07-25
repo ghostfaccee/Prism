@@ -19,6 +19,9 @@ async def update_user_password(request: Request, data: UpdatePassword, current_u
 async def get_current_user(request: Request, current_user: User = Depends(get_current_user), service: UserService = Depends(get_user_service)):
     return await service.get_by_id(current_user.user_id)
 
+@router.delete('/me', status_code = status.HTTP_204_NO_CONTENT, summary = 'Deletes the current user', description = 'Returns nothing. Requires a jwt token.')
+async def delete_current_user(request: Request, current_user: User = Depends(get_current_user), service: UserService = Depends(get_user_service)):
+    return await service.delete(current_user.user_id)
 
 @router.get('/user/uuid/{user_uuid}', response_model = UserResponse, status_code = status.HTTP_200_OK, summary = 'Get user', description = 'Return a user information by user_id. Requires a jwt token')
 async def get_user_by_uuid(request: Request, user_uuid: UUID, current_user: User = Depends(get_current_user), service: UserService = Depends(get_user_service)):
@@ -27,3 +30,4 @@ async def get_user_by_uuid(request: Request, user_uuid: UUID, current_user: User
 @router.get('/user/username/{username}', response_model = UserResponse, status_code = status.HTTP_200_OK, summary = 'Get user', description = 'Return a user information by username. Requires a jwt token.')
 async def get_user_by_username(request: Request, username: str, current_user: User = Depends(get_current_user), service: UserService = Depends(get_user_service)):
     return await service.get_by_username(username)
+

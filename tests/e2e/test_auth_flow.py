@@ -2,7 +2,6 @@ import pytest
 from unittest.mock import patch
 from httpx import AsyncClient
 from app.services.tests import UserTestsService
-from app.services.tests import UserTestsService
 from app.core import settings
 
 @pytest.mark.asyncio

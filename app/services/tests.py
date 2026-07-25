@@ -9,3 +9,8 @@ class UserTestsService:
     async def get_verification_token_by_username(self, username: str) -> str:
         user = await self.repo.get_by_username(username)
         return user.verification_token
+
+    async def get_hashed_password_by_username(self,  username: str) -> str:
+        user = await self.repo.get_by_username(username)
+        return user.hashed_password
+    

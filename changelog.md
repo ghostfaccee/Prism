@@ -33,5 +33,13 @@
 - unit tests for authorization and user
 - fixed event loop pytest and asyncpg error
 
+## v0.3.0 - 25.07.2026
+### Added
+- the ability to delete an account
+- new endpoint: `/v1/me` | DELETE
+- more tests
+### Changed
+- changes in documentation
+
 ## to be continued :)
 ...

@@ -92,3 +92,12 @@ async def test_update_user_password_but_user_id_does_not_exists_error(user_servi
 async def test_update_user_password_but_old_password_is_invalid(test_user: User, user_service: UserService) -> None:
     with pytest.raises(user_exc.InvalidPassword):
         await user_service.update_password(test_user.user_id, UpdatePassword(old_pass = 'invalidpassword', new_pass = 'newpass'))
+
+@pytest.mark.asyncio
+async def test_delete_user(test_user: User, user_service: UserService) -> None:
+    assert await user_service.delete(test_user.user_id) is None
+
+@pytest.mark.asyncio
+async def test_delete_user_but_user_does_not_exist(user_service: UserService) -> None:
+    with pytest.raises(user_exc.UserDoesNotExists):
+        await user_service.delete(uuid4())
