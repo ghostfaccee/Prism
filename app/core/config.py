@@ -22,6 +22,11 @@ class Settings(BaseSettings):
     SMTP_PASSWORD: str
     VERIFICATION_LINK: str
 
+
+    GITHUB_CLIENT_ID: str
+    GITHUB_CLIENT_SECRET: str
+    GITHUB_REDIRECT_URI: str
+
     model_config = ConfigDict(env_file = '.env', case_sensitive = True, extra = 'ignore')
 
 settings = Settings()
