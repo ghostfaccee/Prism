@@ -41,5 +41,11 @@
 ### Changed
 - changes in documentation
 
+## v0.4.0 - 29.07.2026
+### Added
+- the ability to link GitHub
+- getting information about a user's GitHub profile if they have linked it
+- new endpoints
+
 ## to be continued :)
 ...

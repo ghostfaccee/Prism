@@ -1,4 +1,5 @@
 from app.services.auth import AuthService, VerificationService
 from app.services.user import UserService
+from app.services.github import GitHubService
 
-__all__ = ['AuthService', 'UserService', 'VerificationService']
+__all__ = ['AuthService', 'UserService', 'VerificationService', 'GitHubService']
