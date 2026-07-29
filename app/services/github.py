@@ -8,6 +8,8 @@ from app.models import GitHubIntegration
 from app.core import settings
 from app.schemas import GitHubTokenResponse, GitHubUserInfo
 
+# TODO: write tests
+
 class GitHubService:
     def __init__(self, db: AsyncSession) -> None:
         self.repo = GitHubIntegrationRepository(db)

@@ -1,4 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
+from datetime import datetime
 from sqlalchemy import select
 from app.models import User
 from typing import Optional
@@ -57,4 +58,24 @@ class UserRepository:
         await self.db.commit()
         await self.db.refresh(user)
         return user
+
+    async def setup_new_state(self, user_id: UUID, state: str, expire: datetime) -> bool:
+        user = await self.get_by_id(user_id)
+        if not user:
+            return False
+        user.github_oauth_state = state
+        user.github_oauth_state_expires = expire
+        await self.db.commit()
+        await self.db.refresh(user)
+        return True
+
+    async def reset_state(self, user_id: UUID) -> bool:
+        user = await self.get_by_id(user_id)
+        if not user:
+            return False
+        user.github_oauth_state = None
+        user.github_oauth_state_expires = None
+        await self.db.commit()
+        await self.db.refresh(user)
+        return True
     

@@ -7,6 +7,8 @@ from app.schemas import UserUpdate, UpdatePassword
 from app.tasks.email import send_verification_email
 from app.utils import generate_verification_token, verify_password, hash_password
 from app.exceptions import user as user_exc
+from app.exceptions import state as state_exc
+from datetime import datetime, timezone
 
 class UserService:
     def __init__(self, db: AsyncSession) -> None:
@@ -61,4 +63,16 @@ class UserService:
         if not await self.repo.delete(user_id):
             raise user_exc.UserDoesNotExists()
         return None
-    
+
+    async def setup_new_state(self, user_id: UUID, state: str, expire: datetime) -> Optional[bool]: # TODO: write tests
+        success = await self.repo.setup_new_state(user_id, state, expire)
+        if not success:
+            raise user_exc.UserDoesNotExists()
+        return success
+
+    async def check_state(self, current_user: User, state: str) -> Optional[bool]:
+        if not current_user.github_oauth_state or current_user.github_oauth_state != state:
+            raise state_exc.InvalidStateError()
+        if current_user.github_oauth_state_expires < datetime.now(timezone.utc).replace(tzinfo=None):
+            raise state_exc.StateExpiredError()
+        return await self.repo.reset_state(current_user.user_id)
