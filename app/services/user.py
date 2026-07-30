@@ -70,9 +70,10 @@ class UserService:
             raise user_exc.UserDoesNotExists()
         return success
 
-    async def check_state(self, current_user: User, state: str) -> Optional[bool]:
-        if not current_user.github_oauth_state or current_user.github_oauth_state != state:
+    async def check_state(self, user_id: UUID, state: str) -> Optional[bool]:
+        user = await self.get_by_id(user_id)
+        if not user.github_oauth_state or user.github_oauth_state != state:
             raise state_exc.InvalidStateError()
-        if current_user.github_oauth_state_expires < datetime.now(timezone.utc).replace(tzinfo=None):
+        if user.github_oauth_state_expires < datetime.now(timezone.utc).replace(tzinfo = None):
             raise state_exc.StateExpiredError()
-        return await self.repo.reset_state(current_user.user_id)
+        return await self.repo.reset_state(user_id)

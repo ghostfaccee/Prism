@@ -27,7 +27,7 @@ async def github_login(request: Request, current_user: User = Depends(get_curren
 
 @router.get('/github/callback', response_model = GitHubCallbackResponse, status_code = status.HTTP_200_OK, summary = 'GitHub redirect', description = 'Accepts the code from GitHub, exchanges it for a token, and stores it in the database. Requires a jwt token.')
 async def github_callback(request: Request, code: str, state: str, current_user: User = Depends(get_current_user), user_service: UserService = Depends(get_user_service), github_service: GitHubService = Depends(get_github_service)) -> GitHubCallbackResponse:
-    await user_service.check_state(current_user, state)
+    await user_service.check_state(current_user.user_id, state)
     token_data = await github_service.exchange_code_for_token(code)
     if await github_service.exists_integration_by_user_id(current_user.user_id):
         await github_service.update_user_token(current_user.user_id, token_data.access_token)

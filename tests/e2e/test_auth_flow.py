@@ -41,3 +41,4 @@ async def test_auth_without_email_flow(client: AsyncClient, auth_without_email: 
 
     update_password_response = await client.patch('/v1/me/password', headers = headers, json = {'old_pass' : 'testpass123', 'new_pass' : 'newtestpass123'})
     assert update_password_response.status_code == 200, 'Couldn\'t update the user password'
+

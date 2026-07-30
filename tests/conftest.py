@@ -1,11 +1,12 @@
 import pytest
 from typing import AsyncGenerator
 from httpx import AsyncClient, ASGITransport
+from datetime import datetime, timezone, timedelta
 from unittest.mock import patch
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 from app.core import Base, get_db, settings
 from app.repositories import UserRepository
-from app.services import UserService, AuthService, VerificationService
+from app.services import UserService, AuthService, VerificationService, GitHubService
 from app.services.tests import UserTestsService
 from app.models import User
 from app.utils import hash_password
@@ -118,6 +119,18 @@ async def test_user2_for_test_user(db_session: AsyncSession) -> User:
     return await repo.create(user)
 
 @pytest.fixture
+async def test_user_with_state(db_session: AsyncSession) -> User:
+    repo = UserRepository(db_session)
+    user = User(
+        username = 'testuser',
+        email = 'testuser@mail.com',
+            hashed_password = hash_password('testpass123')
+    )
+    creaeted_user = await repo.create(user)
+    await repo.setup_new_state(creaeted_user.user_id, 'teststate', datetime.now(timezone.utc).replace(tzinfo = None) + timedelta(minutes = 10))
+    return await repo.get_by_id(creaeted_user.user_id)
+
+@pytest.fixture
 async def user_service(db_session: AsyncSession) -> UserService:
     return UserService(db_session)
 
@@ -132,3 +145,7 @@ async def verification_service(db_session: AsyncSession) -> VerificationService:
 @pytest.fixture
 async def user_tests_service(db_session: AsyncSession) -> UserTestsService:
     return UserTestsService(db_session)
+
+@pytest.fixture
+async def github_service(db_session: AsyncSession) -> GitHubService:
+    return GitHubService(db_session)
