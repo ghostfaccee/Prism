@@ -7,7 +7,8 @@ from app.repositories import GitHubIntegrationRepository
 from app.models import GitHubIntegration
 from app.core import settings
 from app.schemas import GitHubTokenResponse, GitHubUserInfo
-
+from app.utils import handle_github_status_code
+# TODO: Due to the error handling update, update the tests
 class GitHubService:
     def __init__(self, db: AsyncSession) -> None:
         self.repo = GitHubIntegrationRepository(db)
@@ -28,7 +29,7 @@ class GitHubService:
                     'redirect_uri': settings.GITHUB_REDIRECT_URI # recommended
                 }
             )
-        response.raise_for_status()
+        handle_github_status_code(response)
         data = response.json()
         if 'access_token' not in data:
             raise github_exc.GitHubError(data)
@@ -93,7 +94,7 @@ class GitHubService:
                 'https://api.github.com/user',
                 headers = {'Authorization': f'Bearer {integration.access_token}'}
             )
-        response.raise_for_status()
+        handle_github_status_code(response)
         data = response.json()
         if 'login' not in data:
             raise github_exc.LoginNotInResponseError()
@@ -120,10 +121,7 @@ class GitHubService:
                 'https://api.github.com/user',
                 headers = {'Authorization': f'Bearer {access_token}'}
             )
-        if response.status_code == 401:
-            raise github_exc.InvalidOrExpiredGitHubTokenError()
-
-        response.raise_for_status()
+        handle_github_status_code(response)
         data = response.json()
         return GitHubUserInfo(**data)
 
@@ -137,7 +135,7 @@ class GitHubService:
                 headers = {'Authorization': f'Bearer {access_token}'},
                 params = {'per_page': 5}
             )
-        response.raise_for_status()
+        handle_github_status_code(response)
         return response.json()
 
     async def get_user_repositories(self, user_id: UUID) -> list:
@@ -148,7 +146,7 @@ class GitHubService:
                 headers = {'Authorization': f'Bearer {access_token}'},
                 params = {'per_page': 5}
             )
-        response.raise_for_status()
+        handle_github_status_code(response)
         return response.json()
 
     async def get_github_commits(self, user_id: int, repo_name: str) -> list:
@@ -160,7 +158,7 @@ class GitHubService:
                 headers = {'Authorization': f'Bearer {access_token}'},
                 params = {'per_page': 5}
             )
-        response.raise_for_status()
+        handle_github_status_code(response)
         return response.json()
 
     async def get_repository_pulls(self, user_id: UUID, repo_name: str) -> list:
@@ -172,7 +170,7 @@ class GitHubService:
                 headers = {'Authorization': f'Bearer {access_token}'},
                 params = {'state': 'all', 'sort': 'updated', 'direction': 'desc', 'per_page': 5}
             )
-        response.raise_for_status()
+        handle_github_status_code(response)
         return response.json()
 
     async def get_repository_issues(self, user_id: UUID, repo_name: str) -> list:
@@ -184,6 +182,6 @@ class GitHubService:
                 headers = {'Authorization': f'Bearer {access_token}'},
                 params = {'state': 'all', 'sort': 'updated', 'direction': 'desc', 'per_page': 5}
             )
-        response.raise_for_status()
+        handle_github_status_code(response)
         return response.json()
     

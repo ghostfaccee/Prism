@@ -42,6 +42,26 @@ async def github_callback(request: Request, code: str, state: str, current_user:
 async def get_github_user_info(request: Request, current_user: User = Depends(get_current_user), service: GitHubService = Depends(get_github_service)) -> GitHubUserInfo:
     return await service.get_user_info(current_user.user_id)
 
+@router.get('/github/events', status_code = status.HTTP_200_OK, summary = 'Get github events', description = 'Returns a list of events on GitHub. Requires a jwt token.')
+async def get_github_user_events(request: Request, current_user: User = Depends(get_current_user), service: GitHubService = Depends(get_github_service)) -> list:
+    return await service.get_user_events(current_user.user_id)
+
+@router.get('/github/repositories', status_code = status.HTTP_200_OK, summary = 'Get github repositories', description = 'Returns a list of repositories on GitHub. Requires a jwt token.')
+async def get_github_user_repositories(request: Request, current_user: User = Depends(get_current_user), service: GitHubService = Depends(get_github_service)) -> list:
+    return await service.get_user_repositories(current_user.user_id)
+
+@router.get('/github/{repo}/commits', status_code = status.HTTP_200_OK, summary = 'Get github commits', description = 'Returns a list of commits. Requires a jwt token.')
+async def get_github_repo_commits(request: Request, repo: str, current_user: User = Depends(get_current_user), service: GitHubService = Depends(get_github_service)) -> list:
+    return await service.get_github_commits(current_user.user_id, repo)
+
+@router.get('/github/{repo}/pulls', status_code = status.HTTP_200_OK, summary = 'Get github pulls', description = 'Returns a list of pulls. Requires a jwt token.')
+async def get_github_repo_pulls(request: Request, repo: str, current_user: User = Depends(get_current_user), service: GitHubService = Depends(get_github_service)) -> list:
+    return await service.get_repository_pulls(current_user.user_id, repo)
+
+@router.get('/github/{repo}/issues', status_code = status.HTTP_200_OK, summary = 'Get github issues', description = 'Return a list of issues. Requires a jwt token.')
+async def get_github_repo_issues(request: Request, repo: str, current_user: User = Depends(get_current_user), service: GitHubService = Depends(get_github_service)) -> list:
+    return await service.get_repository_issues(current_user.user_id, repo)
+
 @router.get('/github/feed', response_model = GitHubFeedResponse, status_code = status.HTTP_200_OK, summary = 'GitHub feed', description = 'Returns the GitHub feed. Requires a jwt token.')
 async def get_github_feed(request: Request, current_user: User = Depends(get_current_user), service: GitHubFeedService = Depends(get_github_feed_service)) -> GitHubFeedResponse:
     return await service.get_user_feed(current_user.user_id)
