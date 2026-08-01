@@ -1,5 +1,6 @@
 
 import asyncio
+from app.core import logger
 from uuid import UUID
 from app.schemas import GitHubFeedResponse
 from app.services import GitHubService
@@ -8,6 +9,12 @@ class GitHubFeedService:
     def __init__(self, github_service: GitHubService) -> None:
         self.service = github_service
 
+    @staticmethod
+    def _handle_exception(data: list, data_type: str) -> None:
+        if isinstance(data, Exception):
+            logger.warning(f'Failed to fetch {data_type}')
+            return []
+        return data
     async def get_user_feed(self, user_id: UUID) -> GitHubFeedResponse:
         '''Collects a complete user activity feed on GitHub'''
         await self.service._get_ensure_current_github_username(user_id) # update the username in advance if it has been updated
@@ -21,7 +28,11 @@ class GitHubFeedService:
             pulls_task = self.service.get_repository_pulls(user_id, repo_name)
             issues_task = self.service.get_repository_issues(user_id, repo_name)
             commits, pulls, issues = await asyncio.gather(commits_task, pulls_task, issues_task, return_exceptions = True)
-            return {'commits': commits, 'pulls': pulls , 'issues': issues}
+            return {
+                'commits': self._handle_exception(commits, 'commits'), 
+                'pulls': self._handle_exception(pulls, 'pulls'), 
+                'issues': self._handle_exception(issues, 'issues')
+            }
         res = await asyncio.gather(*[fetch_repo_data(repo) for repo in repos])
         commits, pulls, issues = [], [], []
         for r in res:
@@ -35,3 +46,4 @@ class GitHubFeedService:
             issues = issues,
             total_count = len(events) + len(commits) + len(pulls) + len(issues)
         )
+    
