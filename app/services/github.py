@@ -8,8 +8,6 @@ from app.models import GitHubIntegration
 from app.core import settings
 from app.schemas import GitHubTokenResponse, GitHubUserInfo
 
-# TODO: write tests
-
 class GitHubService:
     def __init__(self, db: AsyncSession) -> None:
         self.repo = GitHubIntegrationRepository(db)
@@ -60,6 +58,14 @@ class GitHubService:
             raise github_exc.GitHubIntegrationDoesNotExistsError()
         return await self.repo.update_access_token(user_id, token)
 
+    async def _update_github_username(self, user_id: UUID, new_username: str) -> Optional[GitHubIntegration]:
+        '''Updates the username from GitHub'''
+        # TODO: unit tests
+        integration = await self.repo.get_by_user_id(user_id)
+        if not integration:
+            raise github_exc.GitHubIntegrationDoesNotExistsError()
+        return await self.repo.update_github_username(user_id, new_username)
+
     async def delete(self, user_id: UUID) -> None:
         '''Delete the github integration for the user'''
         if not await self.repo.delete_by_user_id(user_id):
@@ -69,12 +75,42 @@ class GitHubService:
     # === GitHub API ===
     # Documentation: https://docs.github.com/en/rest/about-the-rest-api/about-the-rest-api?apiVersion=2026-03-10
 
-    async def _get_access_token_by_user_id(self, user_id: UUID) -> str:
+    async def _get_access_token_by_user_id(self, user_id: UUID) -> Optional[str]:
         '''Obtaining a token based on the user's ID is necessary for the service's API functions'''
         integration = await self.repo.get_by_user_id(user_id)
         if not integration:
             raise github_exc.GitHubIntegrationDoesNotExistsError()
         return integration.access_token
+
+    async def _get_github_username(self, user_id: UUID) -> Optional[str]:
+        '''Required to get a username on GitHub'''
+        # TODO: unit tests
+        integration = await self.repo.get_by_user_id(user_id)
+        if not integration:
+            raise github_exc.GitHubIntegrationDoesNotExistsError()
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                'https://api.github.com/user',
+                headers = {'Authorization': f'Bearer {integration.access_token}'}
+            )
+        response.raise_for_status()
+        data = response.json()
+        if 'login' not in data:
+            raise github_exc.LoginNotInResponseError()
+        return data['login']
+
+    async def _get_ensure_current_github_username(self, user_id: UUID) -> Optional[str]:
+        '''Returns the user's GitHub username and updates it in the database if it has changed.'''
+        # TODO: unit tests
+        integration = await self.repo.get_by_user_id(user_id)
+        if not integration:
+            raise github_exc.GitHubIntegrationDoesNotExistsError()
+        current_username = await self._get_github_username(user_id)
+        if integration.github_username != current_username or integration.github_username is None:
+            updated_integration = await self._update_github_username(user_id, current_username)
+            return updated_integration.github_username
+        else:
+            return integration.github_username
 
     async def get_user_info(self, user_id: UUID) -> GitHubUserInfo:
         '''Gets information about a github user'''
@@ -91,4 +127,63 @@ class GitHubService:
         data = response.json()
         return GitHubUserInfo(**data)
 
-    # TODO: add ways to get other statistics
+    async def get_user_events(self, user_id: UUID) -> list:
+        '''Receives user events'''
+        access_token = await self._get_access_token_by_user_id(user_id)
+        username = await self._get_ensure_current_github_username(user_id)
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                f'https://api.github.com/users/{username}/events',
+                headers = {'Authorization': f'Bearer {access_token}'},
+                params = {'per_page': 5}
+            )
+        response.raise_for_status()
+        return response.json()
+
+    async def get_user_repositories(self, user_id: UUID) -> list:
+        access_token = await self._get_access_token_by_user_id(user_id)
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                'https://api.github.com/user/repos',
+                headers = {'Authorization': f'Bearer {access_token}'},
+                params = {'per_page': 5}
+            )
+        response.raise_for_status()
+        return response.json()
+
+    async def get_github_commits(self, user_id: int, repo_name: str) -> list:
+        owner = await self._get_ensure_current_github_username(user_id)
+        access_token = await self._get_access_token_by_user_id(user_id)
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                f'https://api.github.com/repos/{owner}/{repo_name}/commits',
+                headers = {'Authorization': f'Bearer {access_token}'},
+                params = {'per_page': 5}
+            )
+        response.raise_for_status()
+        return response.json()
+
+    async def get_repository_pulls(self, user_id: UUID, repo_name: str) -> list:
+        owner = await self._get_ensure_current_github_username(user_id)
+        access_token = await self._get_access_token_by_user_id(user_id)
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                f'https://api.github.com/repos/{owner}/{repo_name}/pulls',
+                headers = {'Authorization': f'Bearer {access_token}'},
+                params = {'state': 'all', 'sort': 'updated', 'direction': 'desc', 'per_page': 5}
+            )
+        response.raise_for_status()
+        return response.json()
+
+    async def get_repository_issues(self, user_id: UUID, repo_name: str) -> list:
+        owner = await self._get_ensure_current_github_username(user_id)
+        access_token = await self._get_access_token_by_user_id(user_id)
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                f'https://api.github.com/repos/{owner}/{repo_name}/issues',
+                headers = {'Authorization': f'Bearer {access_token}'},
+                params = {'state': 'all', 'sort': 'updated', 'direction': 'desc', 'per_page': 5}
+            )
+        response.raise_for_status()
+        return response.json()
+    

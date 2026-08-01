@@ -15,3 +15,7 @@ class GitHubError(HTTPException):
 class InvalidOrExpiredGitHubTokenError(HTTPException):
     def __init__(self):
         return super().__init__(status.HTTP_401_UNAUTHORIZED, 'Invalid or expired GitHub token')
+
+class LoginNotInResponseError(HTTPException):
+    def __init__(self):
+        return super().__init__(status.HTTP_400_BAD_REQUEST, 'Login not in response')

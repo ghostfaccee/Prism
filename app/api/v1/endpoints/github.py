@@ -1,10 +1,10 @@
 import secrets
 from fastapi import APIRouter, Request, status, Depends
-from app.dependencies import get_current_user, get_github_service, get_user_service
-from app.services import GitHubService, UserService
+from app.dependencies import get_current_user, get_github_service, get_user_service, get_github_feed_service
+from app.services import GitHubService, UserService, GitHubFeedService
 from fastapi.responses import RedirectResponse
 from app.models import User
-from app.schemas import GitHubCallbackResponse, GitHubUserInfo
+from app.schemas import GitHubCallbackResponse, GitHubUserInfo, GitHubFeedResponse
 from app.core import settings
 from datetime import datetime, timezone, timedelta
 
@@ -41,3 +41,7 @@ async def github_callback(request: Request, code: str, state: str, current_user:
 @router.get('/github/me', response_model = GitHubUserInfo, status_code = status.HTTP_200_OK, summary = 'Get github user info', description = 'Gets information about the user\'s GitHub account, if they have linked it. Requires a jwt token.')
 async def get_github_user_info(request: Request, current_user: User = Depends(get_current_user), service: GitHubService = Depends(get_github_service)) -> GitHubUserInfo:
     return await service.get_user_info(current_user.user_id)
+
+@router.get('/github/feed', response_model = GitHubFeedResponse, status_code = status.HTTP_200_OK, summary = 'GitHub feed', description = 'Returns the GitHub feed. Requires a jwt token.')
+async def get_github_feed(request: Request, current_user: User = Depends(get_current_user), service: GitHubFeedService = Depends(get_github_feed_service)) -> GitHubFeedResponse:
+    return await service.get_user_feed(current_user.user_id)

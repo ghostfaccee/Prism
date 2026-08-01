@@ -27,6 +27,15 @@ class GitHubIntegrationRepository:
         await self.db.refresh(integration)
         return integration
 
+    async def update_github_username(self, user_id: UUID, new_username: str) -> Optional[GitHubIntegration]:
+        integration = await self.get_by_user_id(user_id)
+        if not integration:
+            return None
+        integration.github_username = new_username
+        await self.db.commit()
+        await self.db.refresh(integration)
+        return integration
+
     async def delete_by_user_id(self, user_id: UUID) -> bool:
         integration = await self.get_by_user_id(user_id)
         if integration:
