@@ -61,4 +61,4 @@ class GitHubUnavailable503Error(HTTPException):
 
 class GitHubUnknownAPIError(HTTPException):
     def __init__(self, status_code: int, detail: str):
-        return super.__init__(status_code, f'Github: {status_code} | Unknown error | Detail: {detail}')
+        return super().__init__(status_code, f'Github: {status_code} | Unknown error | Detail: {detail}')

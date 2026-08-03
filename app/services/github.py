@@ -8,7 +8,7 @@ from app.models import GitHubIntegration
 from app.core import settings
 from app.schemas import GitHubTokenResponse, GitHubUserInfo
 from app.utils import handle_github_status_code
-# TODO: Due to the error handling update, update the tests
+
 class GitHubService:
     def __init__(self, db: AsyncSession) -> None:
         self.repo = GitHubIntegrationRepository(db)
@@ -35,10 +35,15 @@ class GitHubService:
             raise github_exc.GitHubError(data)
         return GitHubTokenResponse(**data)
 
-    async def create_user_token(self, user_id: UUID, token: str) -> Optional[GitHubIntegration]:
-        '''Saves the token for the user'''
+    async def exists_integration_by_user_id(self, user_id: UUID) -> bool:
         integration = await self.repo.get_by_user_id(user_id)
         if integration:
+            return True
+        return False
+
+    async def create_user_token(self, user_id: UUID, token: str) -> Optional[GitHubIntegration]:
+        '''Saves the token for the user'''
+        if await self.exists_integration_by_user_id(user_id):
             raise github_exc.GitHubIntegrationExistsError()
         integration = GitHubIntegration(
             user_id = user_id,
@@ -46,24 +51,15 @@ class GitHubService:
         )
         return await self.repo.create(integration)
 
-    async def exists_integration_by_user_id(self, user_id: UUID) -> bool:
-        integration = await self.repo.get_by_user_id(user_id)
-        if integration:
-            return True
-        return False
-
     async def update_user_token(self, user_id: UUID, token: str) -> Optional[GitHubIntegration]:
         '''Updates the token for the user'''
-        integration = await self.repo.get_by_user_id(user_id)
-        if not integration:
+        if not await self.exists_integration_by_user_id(user_id):
             raise github_exc.GitHubIntegrationDoesNotExistsError()
         return await self.repo.update_access_token(user_id, token)
 
     async def _update_github_username(self, user_id: UUID, new_username: str) -> Optional[GitHubIntegration]:
         '''Updates the username from GitHub'''
-        # TODO: unit tests
-        integration = await self.repo.get_by_user_id(user_id)
-        if not integration:
+        if not await self.exists_integration_by_user_id(user_id):
             raise github_exc.GitHubIntegrationDoesNotExistsError()
         return await self.repo.update_github_username(user_id, new_username)
 
@@ -78,14 +74,12 @@ class GitHubService:
 
     async def _get_access_token_by_user_id(self, user_id: UUID) -> Optional[str]:
         '''Obtaining a token based on the user's ID is necessary for the service's API functions'''
-        integration = await self.repo.get_by_user_id(user_id)
-        if not integration:
+        if not await self.exists_integration_by_user_id(user_id):
             raise github_exc.GitHubIntegrationDoesNotExistsError()
-        return integration.access_token
+        return (await self.repo.get_by_user_id(user_id)).access_token
 
     async def _get_github_username(self, user_id: UUID) -> Optional[str]:
         '''Required to get a username on GitHub'''
-        # TODO: unit tests
         integration = await self.repo.get_by_user_id(user_id)
         if not integration:
             raise github_exc.GitHubIntegrationDoesNotExistsError()
@@ -102,7 +96,6 @@ class GitHubService:
 
     async def _get_ensure_current_github_username(self, user_id: UUID) -> Optional[str]:
         '''Returns the user's GitHub username and updates it in the database if it has changed.'''
-        # TODO: unit tests
         integration = await self.repo.get_by_user_id(user_id)
         if not integration:
             raise github_exc.GitHubIntegrationDoesNotExistsError()
