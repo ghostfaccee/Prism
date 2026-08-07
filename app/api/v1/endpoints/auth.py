@@ -2,14 +2,18 @@ from fastapi import status, APIRouter, Depends, Request
 from app import get_auth_service
 from app.schemas import UserRegister, UserLogin, TokenResponse, UserResponse
 from app.services import AuthService
+from app.middlewares import RateLimit
 
 router = APIRouter()
+limiter = RateLimit.get_limiter()
 
 @router.post('/auth/register', response_model = UserResponse, status_code = status.HTTP_201_CREATED, summary = 'Registration', description = 'Creates a new user. Returns the user_id, username and email (if email exists).')
+@limiter.limit('5/minute')
 async def register(request: Request, data: UserRegister, service: AuthService = Depends(get_auth_service)):
     return await service.register(data)
 
 @router.post('/auth/login', response_model = TokenResponse, status_code = status.HTTP_200_OK, summary = 'Login', description = 'User login. Returns the jwt token required for other endpoints and its type.')
+@limiter.limit('5/minute')
 async def login(request: Request, data: UserLogin, service: AuthService = Depends(get_auth_service)):
     return await service.login(data)
 

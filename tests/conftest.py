@@ -10,8 +10,9 @@ from app.services import UserService, AuthService, VerificationService, GitHubSe
 from app.services.tests import UserTestsService
 from app.models import User
 from app.utils import hash_password
+from app.middlewares import RateLimit
 
-# ...
+RateLimit.disable_redis()
 
 from app.main import app
 
