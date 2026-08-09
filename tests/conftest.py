@@ -11,8 +11,10 @@ from app.services.tests import UserTestsService
 from app.models import User
 from app.utils import hash_password
 from app.middlewares import RateLimit
+from app.infrastructure import CacheService
 
 RateLimit.disable_redis()
+CacheService.disable()
 
 from app.main import app
 

@@ -47,5 +47,12 @@
 - getting information about a user's GitHub profile if they have linked it
 - new endpoints
 
+## v0.5.0 - 09.08.2026
+## Added
+- cache for github endpoints
+- rate limits for endpoints
+- more tests
+- the event feed, commits, pull requests, and much more
+
 ## to be continued :)
 ...

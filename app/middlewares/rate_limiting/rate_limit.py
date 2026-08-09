@@ -1,13 +1,14 @@
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
+from typing import Optional
 from fastapi import Request
 from app.core.config import settings
 from app.exceptions import rate_limit as rate_limit_exc
 
 class RateLimit:
     _enabled_redis = True
-    _limiter: Limiter = None
+    _limiter: Optional[Limiter] = None
 
     @classmethod
     def disable_redis(cls):

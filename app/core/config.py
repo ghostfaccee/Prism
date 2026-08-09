@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     TEST_POSTGRES_URL: str
 
     REDIS_URL: str
+    DEFAULT_TTL: int
 
     DEBUG: bool
 
