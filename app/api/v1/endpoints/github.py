@@ -7,7 +7,6 @@ from fastapi.responses import RedirectResponse
 from app.models import User
 from app.schemas import GitHubCallbackResponse, GitHubUserInfo, GitHubFeedResponse
 from app.core import settings
-from datetime import datetime, timezone, timedelta
 from app.middlewares import RateLimit
 from app.infrastructure import CacheService
 
@@ -18,8 +17,7 @@ limiter = RateLimit.get_limiter()
 @limiter.limit('5/minute')
 async def github_login(request: Request, current_user: User = Depends(get_current_user), user_service: UserService = Depends(get_user_service)) -> RedirectResponse:
     state = secrets.token_urlsafe(16)
-    expire = datetime.now(timezone.utc).replace(tzinfo=None) + timedelta(minutes = 10)
-    await user_service.setup_new_state(current_user.user_id, state, expire)
+    await user_service.setup_new_state(current_user.user_id, state)
     github_auth_url = (
         'https://github.com/login/oauth/authorize?'
         f'client_id={settings.GITHUB_CLIENT_ID}&'

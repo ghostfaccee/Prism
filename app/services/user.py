@@ -8,7 +8,7 @@ from app.tasks.email import send_verification_email
 from app.utils import generate_verification_token, verify_password, hash_password
 from app.exceptions import user as user_exc
 from app.exceptions import state as state_exc
-from datetime import datetime, timezone
+from app.infrastructure import GitHubStateService, StateCheckResult
 
 class UserService:
     def __init__(self, db: AsyncSession) -> None:
@@ -64,16 +64,22 @@ class UserService:
             raise user_exc.UserDoesNotExists()
         return None
 
-    async def setup_new_state(self, user_id: UUID, state: str, expire: datetime) -> Optional[bool]: # TODO: write tests
-        success = await self.repo.setup_new_state(user_id, state, expire)
-        if not success:
+    async def setup_new_state(self, user_id: UUID, state: str) -> Optional[bool]:
+        if not await self.repo.get_by_id(user_id):
             raise user_exc.UserDoesNotExists()
+        success = await GitHubStateService.set_state(user_id, state)
+        if not success:
+            raise state_exc.SetupStateError()
         return success
 
     async def check_state(self, user_id: UUID, state: str) -> Optional[bool]:
-        user = await self.get_by_id(user_id)
-        if not user.github_oauth_state or user.github_oauth_state != state:
+        user = await self.repo.get_by_id(user_id)
+        if not user:
+            raise user_exc.UserDoesNotExists()
+        res = await GitHubStateService.check_state(user_id, state)
+        if res == StateCheckResult.MISMATCH:
             raise state_exc.InvalidStateError()
-        if user.github_oauth_state_expires < datetime.now(timezone.utc).replace(tzinfo = None):
+        if res == StateCheckResult.NOT_FOUND:
             raise state_exc.StateExpiredError()
-        return await self.repo.reset_state(user_id)
+        return res == StateCheckResult.SUCCESS
+    

@@ -9,13 +9,13 @@ class CacheService:
     _enabled = True # flag for enabling/disabling cache for tests
 
     @classmethod
-    def disable(cls):
+    def disable(cls) -> None:
         '''disable cache (for tests)'''
         cls._enabled = False
         logger.info('[*] Cache disabled')
 
     @classmethod
-    def enable(cls):
+    def enable(cls) -> None:
         '''enable cache'''
         cls._enabled = True
         logger.info('[*] Cache enabled')
@@ -82,27 +82,6 @@ class CacheService:
         except Exception as e:
             logger.error(f'Cache delete error: {e}')
             return False
-
-    @classmethod
-    async def delete_by_pattern(cls, pattern: str) -> int:
-        '''
-        deletes all keys by pattern
-
-        examples:
-        * CacheService.delete_by_pattern('user:*') - will delete all keys starting with "user:"
-        '''
-        if not cls._enabled:
-            return 0
-        try:
-            redis = await RedisClient.get_client()
-            keys = await redis.keys(pattern)
-            if not keys:
-                return 0
-            deleted = await redis.delete(*keys)
-            return deleted
-        except Exception as e:
-            logger.error(f'Cache delete by pattern error: {e}')
-            return 0
 
     @classmethod
     async def clear(cls) -> bool:

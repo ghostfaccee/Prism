@@ -15,6 +15,7 @@ class GitHubFeedService:
             logger.warning(f'Failed to fetch {data_type}')
             return []
         return data
+    
     async def get_user_feed(self, user_id: UUID) -> GitHubFeedResponse:
         '''Collects a complete user activity feed on GitHub'''
         await self.service._get_ensure_current_github_username(user_id) # update the username in advance if it has been updated
