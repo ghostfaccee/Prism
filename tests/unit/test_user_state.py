@@ -37,7 +37,6 @@ async def test_check_state_but_user_does_not_exists(user_service: UserService) -
     with pytest.raises(user_exc.UserDoesNotExists):
         await user_service.check_state(uuid4(), 'teststate')
 
-
 @pytest.mark.asyncio
 async def test_check_state_but_state_not_found(test_user: User, user_service: UserService) -> None:
     state = 'teststate'

@@ -1,6 +1,8 @@
 from fastapi import status, APIRouter, Depends, Request
+from uuid import UUID
+from app.dependencies import get_current_user_id
 from app import get_auth_service
-from app.schemas import UserRegister, UserLogin, TokenResponse, UserResponse
+from app.schemas import UserRegister, UserLogin, TokenResponse, UserResponse, RefreshTokenRequest
 from app.services import AuthService
 from app.middlewares import RateLimit
 
@@ -17,3 +19,16 @@ async def register(request: Request, data: UserRegister, service: AuthService = 
 async def login(request: Request, data: UserLogin, service: AuthService = Depends(get_auth_service)):
     return await service.login(data)
 
+
+
+# TODO: Add documentation to the endpoints.
+# TODO: Update the returned values of TokenResponse in the documentation.
+@router.post('/auth/refresh', response_model = TokenResponse, status_code = status.HTTP_200_OK, summary = 'Refresh access token', description = 'Allows the user to refresh the access token again, after which the refresh_token value becomes invalid and is added to the blacklist to protect against replay attacks. In addition, if signs of an attack appear, the token is deleted and refreshing the access token via this endpoint becomes impossible.')
+@limiter.limit('5/minute')
+async def refresh(request: Request, refresh_data: RefreshTokenRequest, auth_service: AuthService = Depends(get_auth_service)):
+    return await auth_service.refresh(refresh_data.refresh_token)
+
+@router.post('/auth/logout', status_code = status.HTTP_204_NO_CONTENT, summary = 'Logout', description = 'Removes the refresh token from the database.')
+@limiter.limit('5/minute')
+async def logout(request: Request, current_user_id: UUID = Depends(get_current_user_id), auth_service: AuthService = Depends(get_auth_service)):
+    return await auth_service.logout(current_user_id)

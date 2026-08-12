@@ -42,3 +42,48 @@ async def test_auth_without_email_flow(client: AsyncClient, auth_without_email: 
     update_password_response = await client.patch('/v1/me/password', headers = headers, json = {'old_pass' : 'testpass123', 'new_pass' : 'newtestpass123'})
     assert update_password_response.status_code == 200, 'Couldn\'t update the user password'
 
+@pytest.mark.asyncio
+async def test_refresh_token_flow(client: AsyncClient, register_user_without_email: tuple) -> None:
+    username, password = register_user_without_email
+    login_response = await client.post('/v1/auth/login', json = {'username': username, 'password': password})
+    assert login_response.status_code == 200
+    login_data = login_response.json()
+
+    refresh_response = await client.post('/v1/auth/refresh', json = {'refresh_token': login_data['refresh_token']})
+    assert refresh_response.status_code == 200
+
+    refresh_data = refresh_response.json()
+    assert refresh_data['access_token'] is not None and refresh_data['access_token'] != ''
+    assert refresh_data['refresh_token'] is not None and refresh_data['refresh_token'] != ''
+
+@pytest.mark.asyncio
+async def test_refresh_token_but_with_old_refresh_token(client: AsyncClient, register_user_without_email: tuple) -> None:
+    username, password = register_user_without_email
+    login_response = await client.post('/v1/auth/login', json = {'username': username, 'password': password})
+    assert login_response.status_code == 200
+    login_data = login_response.json()
+
+    refresh_token = login_data['refresh_token']
+    refresh_response = await client.post('/v1/auth/refresh', json = {'refresh_token': refresh_token})
+    assert refresh_response.status_code == 200
+
+    refresh_response_with_old_refresh_token = await client.post('/v1/auth/refresh', json = {'refresh_token': refresh_token})
+    assert refresh_response_with_old_refresh_token.status_code == 403
+
+@pytest.mark.asyncio
+async def test_logout_flow(client: AsyncClient, register_user_without_email: tuple) -> None:
+    username, password = register_user_without_email
+    login_response = await client.post('/v1/auth/login', json = {'username': username, 'password': password})
+    assert login_response.status_code == 200
+    login_data = login_response.json()
+
+    refresh_token = login_data['refresh_token']
+    access_token = login_data['access_token']
+
+    headers = {'Authorization': f'Bearer {access_token}'}
+    logout_response = await client.post('/v1/auth/logout', headers = headers)
+    assert logout_response.status_code == 204
+
+    refresh_response = await client.post('/v1/auth/refresh', json = {'refresh_token': refresh_token})
+    assert refresh_response.status_code == 400
+

@@ -28,6 +28,10 @@ class InvalidOrExpiredTokenError(HTTPException):
     def __init__(self):
         return super().__init__(status.HTTP_404_NOT_FOUND, 'Invalid or expired token')
 
+class BlacklistTokenError(HTTPException):
+    def __init__(self):
+        return super().__init__(status.HTTP_403_FORBIDDEN, 'Your token in blacklist')
+
 class EmailAlreadyVerifiedError(HTTPException):
     def __init__(self):
         return super().__init__(status.HTTP_400_BAD_REQUEST, 'Email already verified')

@@ -3,10 +3,11 @@ from typing import AsyncGenerator
 from httpx import AsyncClient, ASGITransport
 from unittest.mock import patch
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
-from app.core import Base, get_db, settings
+from app.core import Base, get_db, settings, RedisClient
 from app.repositories import UserRepository
 from app.services import UserService, AuthService, VerificationService, GitHubService
 from app.services.tests import UserTestsService
+from app.schemas import UserLogin, TokenResponse
 from app.models import User
 from app.utils import hash_password
 from app.middlewares import RateLimit
@@ -57,6 +58,12 @@ async def db_session(pg_engine):
     async with pg_engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
 
+@pytest.fixture(autouse = True)
+async def flush_redis():
+    redis = await RedisClient.get_client()
+    yield
+    await redis.flushdb()
+
 @pytest.fixture
 async def client() -> AsyncGenerator[AsyncClient, None]:
     transport = ASGITransport(app = app)
@@ -101,6 +108,15 @@ async def auth_without_email(client: AsyncClient) -> str:
     return login_data['access_token']
 
 @pytest.fixture
+async def register_user_without_email(client: AsyncClient) -> tuple:
+    username = 'testuser'
+    password = 'testpass123'
+
+    register_response = await client.post('/v1/auth/register', json = {'username': username, 'password': password})
+    assert register_response.status_code == 201, 'Failed to register testuser'
+    return (username, password)
+
+@pytest.fixture
 async def test_user(db_session: AsyncSession) -> User:
     repo = UserRepository(db_session)
     user = User(
@@ -139,3 +155,9 @@ async def user_tests_service(db_session: AsyncSession) -> UserTestsService:
 @pytest.fixture
 async def github_service(db_session: AsyncSession) -> GitHubService:
     return GitHubService(db_session)
+
+@pytest.fixture
+async def refresh_token(test_user: User, auth_service: AuthService) -> str:
+    login_response = await auth_service.login(UserLogin(username = test_user.username, password = 'testpass123'))
+    assert isinstance(login_response, TokenResponse)
+    return login_response.refresh_token

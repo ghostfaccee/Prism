@@ -1,6 +1,5 @@
 from uuid import UUID
-from typing import Optional, Any
-from app.infrastructure import CacheService
+from typing import Optional
 from app.core import logger, RedisClient
 from enum import Enum
 
@@ -22,7 +21,7 @@ class GitHubStateService:
         try:
             key = cls._make_key(user_id)
             redis = await RedisClient.get_client()
-            await redis.setex(key, cls.TTL, state)
+            await redis.set(key, state, ex = cls.TTL)
             return True
         except Exception as e:
             logger.error(f'State set error: {e}')
@@ -56,6 +55,7 @@ class GitHubStateService:
     async def check_state(cls, user_id: UUID, current_state: str) -> int:
         '''
         checks for the presence of state, verifies it, and deletes it
+        
         return value:
             * -1 - state not found | errors
             * 0 - state mismatch (possible csrf attack)

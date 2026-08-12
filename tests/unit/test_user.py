@@ -1,10 +1,12 @@
 import pytest
 from uuid import uuid4
-from unittest.mock import patch
+from unittest.mock import patch, AsyncMock
 from app.models import User
 from app.services import UserService
 from app.schemas import UserUpdate, UpdatePassword
 from app.exceptions import user as user_exc
+from app.exceptions import internal as internal_exc
+from app.infrastructure import TokenService
 from app.utils import verify_password
 
 @pytest.mark.asyncio
@@ -101,3 +103,20 @@ async def test_delete_user(test_user: User, user_service: UserService) -> None:
 async def test_delete_user_but_user_does_not_exist(user_service: UserService) -> None:
     with pytest.raises(user_exc.UserDoesNotExists):
         await user_service.delete(uuid4())
+
+@pytest.mark.asyncio
+async def test_invalidate_token_but_redis_error(user_service: UserService) -> None:
+    with patch.object(TokenService, 'get_refresh_token', AsyncMock(return_value = None)):
+        with pytest.raises(internal_exc.InternalRedisError):
+            await user_service._invalidate_token(uuid4())
+
+@pytest.mark.asyncio
+async def test_invalidate_token_but_token_not_found(user_service: UserService) -> None:
+    with patch.object(TokenService, 'get_refresh_token', AsyncMock(return_value = '0')):
+        assert await user_service._invalidate_token(uuid4()) == False
+
+@pytest.mark.asyncio
+async def test_invalidate_token(user_service: UserService) -> None:
+    with patch.object(TokenService, 'get_refresh_token', AsyncMock(return_value = 'refreshtoken')):
+        assert await user_service._invalidate_token(uuid4()) == True
+

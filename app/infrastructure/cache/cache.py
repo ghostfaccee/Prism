@@ -1,4 +1,3 @@
-import hashlib
 import json
 from uuid import UUID
 from functools import wraps
@@ -64,7 +63,7 @@ class CacheService:
                 except:
                     data = str(value)
             ttl = ttl or settings.DEFAULT_TTL
-            await redis.setex(key, ttl, data)
+            await redis.set(key, data, ex = ttl)
             return True
         except Exception as e:
             logger.error(f'Cache set error: {e}')

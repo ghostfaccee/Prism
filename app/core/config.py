@@ -14,8 +14,10 @@ class Settings(BaseSettings):
     SLOW_REQUEST_THRESHOLD: float
 
     SECRET_JWT_KEY: str
+    SECRET_REFRESH_KEY: str
     ALGORITHM: str
     JWT_TOKEN_EXPIRE_MINUTES: int
+    REFRESH_TOKEN_EXPIRE_DAYS: int
 
     SMTP_HOST: str
     SMTP_PORT: int

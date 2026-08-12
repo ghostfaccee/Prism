@@ -1,10 +1,9 @@
 import secrets
 from uuid import UUID
 from fastapi import APIRouter, Request, status, Depends
-from app.dependencies import get_current_user, get_github_service, get_user_service, get_github_feed_service, get_current_user_id
+from app.dependencies import get_current_user_id, get_github_service, get_user_service, get_github_feed_service, get_current_user_id
 from app.services import GitHubService, UserService, GitHubFeedService
 from fastapi.responses import RedirectResponse
-from app.models import User
 from app.schemas import GitHubCallbackResponse, GitHubUserInfo, GitHubFeedResponse
 from app.core import settings
 from app.middlewares import RateLimit
@@ -15,9 +14,9 @@ limiter = RateLimit.get_limiter()
 
 @router.get('/github/login', status_code = status.HTTP_307_TEMPORARY_REDIRECT, summary = 'GitHub login', description = 'Redirects the user to the GitHub login page. Requires a jwt token.')
 @limiter.limit('5/minute')
-async def github_login(request: Request, current_user: User = Depends(get_current_user), user_service: UserService = Depends(get_user_service)) -> RedirectResponse:
+async def github_login(request: Request, current_user_id: UUID = Depends(get_current_user_id), user_service: UserService = Depends(get_user_service)) -> RedirectResponse:
     state = secrets.token_urlsafe(16)
-    await user_service.setup_new_state(current_user.user_id, state)
+    await user_service.setup_new_state(current_user_id, state)
     github_auth_url = (
         'https://github.com/login/oauth/authorize?'
         f'client_id={settings.GITHUB_CLIENT_ID}&'
@@ -29,13 +28,13 @@ async def github_login(request: Request, current_user: User = Depends(get_curren
 
 @router.get('/github/callback', response_model = GitHubCallbackResponse, status_code = status.HTTP_200_OK, summary = 'GitHub redirect', description = 'Accepts the code from GitHub, exchanges it for a token, and stores it in the database. Requires a jwt token.')
 @limiter.limit('5/minute')
-async def github_callback(request: Request, code: str, state: str, current_user: User = Depends(get_current_user), user_service: UserService = Depends(get_user_service), github_service: GitHubService = Depends(get_github_service)) -> GitHubCallbackResponse:
-    await user_service.check_state(current_user.user_id, state)
+async def github_callback(request: Request, code: str, state: str, current_user_id: UUID = Depends(get_current_user_id), user_service: UserService = Depends(get_user_service), github_service: GitHubService = Depends(get_github_service)) -> GitHubCallbackResponse:
+    await user_service.check_state(current_user_id.user_id, state)
     token_data = await github_service.exchange_code_for_token(code)
-    if await github_service.exists_integration_by_user_id(current_user.user_id):
-        await github_service.update_user_token(current_user.user_id, token_data.access_token)
+    if await github_service.exists_integration_by_user_id(current_user_id):
+        await github_service.update_user_token(current_user_id, token_data.access_token)
     else:
-        await github_service.create_user_token(current_user.user_id, token_data.access_token)
+        await github_service.create_user_token(current_user_id, token_data.access_token)
     return GitHubCallbackResponse(
         token_type = token_data.token_type,
         scope = token_data.scope
