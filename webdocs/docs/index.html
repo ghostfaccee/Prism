@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <script>
+    (function () {
+      try {
+        var theme = localStorage.getItem("prism-theme");
+        if (theme !== "dark" && theme !== "light") {
+          theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        }
+        document.documentElement.dataset.theme = theme;
+      } catch (error) {
+        document.documentElement.dataset.theme = "light";
+      }
+    })();
+  </script>
+
+  <title>Prism - документация</title>
+  <link rel="stylesheet" href="../assets/css/prism.css">
+  <link rel="icon" href="../../assets/prism-logo.jpeg">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="../index.html">
+      <img class="logo-img" src="../../assets/prism-logo.jpeg" alt="Prism" width="28" height="28">
+      <span>Prism</span>
+    </a>
+
+    <nav class="topnav">
+      <a href="../index.html">Главная</a>
+      <a class="active" href="index.html">Документация</a>
+      <a href="../api/index.html">API Reference</a>
+      <a href="https://github.com/ghostfaccee/Prism" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://gitflic.ru/project/ghostfaccee/prism" target="_blank" rel="noopener">GitFlic</a>
+    </nav>
+
+    <button class="theme-toggle" type="button" data-theme-toggle aria-label="Переключить тему">
+      <span class="knob"></span>
+    </button>
+  </div>
+</header>
+
+<main class="docs-layout">
+  <aside class="side">
+    <div class="sidein">
+      <label>Документация</label>
+
+      <a href="#intro" data-doc-link>Введение</a>
+      <a href="#quickstart" data-doc-link>Быстрый старт</a>
+
+      <details open>
+        <summary>Основы</summary>
+        <a href="#configuration" data-doc-link>Конфигурация</a>
+        <a href="#authentication" data-doc-link>Аутентификация</a>
+      </details>
+    </div>
+  </aside>
+
+  <article class="doc">
+    <section id="intro" class="doc-section">
+      <h1>Введение</h1>
+      <p>
+        <strong>Prism</strong> - API для сбора данных из внешних сервисов.
+        Проект собирает и предоставляет информацию через единый интерфейс.
+      </p>
+
+      <h2>Стек технологий</h2>
+      <ul>
+        <li>FastAPI</li>
+        <li>Redis</li>
+        <li>PostgreSQL</li>
+        <li>Docker</li>
+        <li>Celery (отправка писем)</li>
+      </ul>
+
+      <h2>Лицензия</h2>
+      <p><strong>Код:</strong> Исходный код проекта распространяется по лицензии <strong>Apache 2.0.</strong></p>
+      <p><strong>Логотип и графика:</strong> Все визуальные ресурсы, расположенные в директории <code>assets/</code> (от корня проекта) в исходном коде, защищены авторским правом и являются исключительной собственностью ghostfaccee (автора проекта).
+      Использование логотипа разрешено <strong>только в рамках данного проекта</strong> (например, при создании документации или внесении вклада в проект).
+      Любое другое использование, включая копирование, модификацию, распространение, сублицензирование или коммерческого использования - <strong>строго запрещено без явного письменного соглашения автора</strong>.
+      По запросам разрешения, обращайтесь: <a href="mailto:ghostface.host@gmail.com">ghostface.host@gmail.com</a>.
+      </p>
+    </section>
+
+    <section id="quickstart" class="doc-section">
+      <h1>Быстрый старт</h1>
+      <p>Запустить Prism локально можно всего за 3 шага:</p>
+      <pre><code># Шаг 1: Клонировать репозиторий
+git clone https://github.com/ghostfaccee/Prism.git
+# Шаг 2: Перейти в директорию проекта
+cd Prism
+# Шаг 3: Запустить локально при помощи Docker
+docker compose --profile prod up --build -d</code></pre>
+
+      <p>После запуска API будет доступно по адресу <code>http://127.0.0.1:8000</code>.</p>
+    </section>
+    <section id="configuration" class="doc-section">
+      <h1>Конфигурация</h1>
+      <p>
+        Основные параметры Prism находятся в файле <code>.env</code>.
+      </p>
+      <pre><code># Пример .env
+POSTGRES_USER=user
+POSTGRES_PASSWORD=password
+POSTGRES_DB=db
+POSTGRES_URL=postgresql+asyncpg://user:pass@db:port/db
+
+TEST_POSTGRES_USER=user
+TEST_POSTGRES_PASSWORD=password
+TEST_POSTGRES_DB=db
+TEST_POSTGRES_URL=postgresql+asyncpg://user:password@testdb:port/db
+
+REDIS_URL=redis url
+DEFAULT_TTL=default ttl for cache
+
+DEBUG=True/False
+
+SLOW_REQUEST_THRESHOLD=seconds: float
+
+SECRET_JWT_KEY=your secret key # openssl rand -hex 32
+SECRET_REFRESH_KEY=your secret key # openssl rand -hex 32
+ALGORITHM=HS256 or another
+JWT_TOKEN_EXPIRE_MINUTES=minutes: int
+REFRESH_TOKEN_EXPIRE_DAYS=days: int
+
+SMTP_HOST=host
+SMTP_PORT=port
+SMTP_USER=user
+SMTP_PASSWORD=password
+VERIFICATION_LINK=http://127.0.0.1:8000/v1/verify
+
+
+GITHUB_CLIENT_ID=client id
+GITHUB_CLIENT_SECRET=secret
+GITHUB_REDIRECT_URI=http://localhost:8000/v1/github/callback</code></pre>
+    </section>
+
+    <section id="authentication" class="doc-section">
+      <h1>Аутентификация</h1>
+      <p>
+        Prism использует jwt-токены для доступа к защищённым эндпоинтам.
+        Refresh-токены позволяют обновлять короткоживущий access token.
+      </p>
+      <pre><code># Headers
+Authorization: Bearer (your token)</code></pre>
+    </section>
+  </article>
+</main>
+
+<footer class="footer wrap">
+  <strong>
+    <span>Prism</span>
+  </strong>
+
+  <span>Made with ♥ by ghostfaccee</span>
+
+  <span>Documentation</span>
+</footer>
+
+<script src="../assets/js/prism.js"></script>
+<script>
+  (function () {
+    var links = Array.prototype.slice.call(document.querySelectorAll("[data-doc-link]"));
+    var sections = links
+      .map(function (link) { return document.querySelector(link.getAttribute("href")); })
+      .filter(Boolean);
+
+    function setActive(id) {
+      links.forEach(function (link) {
+        link.classList.toggle("active", link.getAttribute("href") === "#" + id);
+      });
+    }
+
+    if ("IntersectionObserver" in window) {
+      var observer = new IntersectionObserver(function (entries) {
+        var visible = entries
+          .filter(function (entry) { return entry.isIntersecting; })
+          .sort(function (a, b) { return b.intersectionRatio - a.intersectionRatio; });
+
+        if (visible.length) {
+          setActive(visible[0].target.id);
+        }
+      }, {
+        rootMargin: "-20% 0px -65% 0px",
+        threshold: [0.05, 0.2, 0.5]
+      });
+
+      sections.forEach(function (section) { observer.observe(section); });
+    }
+
+    if (window.location.hash) {
+      var initial = document.querySelector(window.location.hash);
+      if (initial) setActive(initial.id);
+    }
+  })();
+</script>
+</body>
+</html>

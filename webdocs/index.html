@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <script>
+    (function () {
+      try {
+        var theme = localStorage.getItem("prism-theme");
+
+        if (theme !== "dark" && theme !== "light") {
+          theme = window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light";
+        }
+
+        document.documentElement.dataset.theme = theme;
+      } catch (error) {
+        document.documentElement.dataset.theme = "light";
+      }
+    })();
+  </script>
+
+  <title>Prism</title>
+  <link rel="stylesheet" href="assets/css/prism.css">
+  <link rel="icon" href="../assets/prism-logo.jpeg">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">
+      <img class="logo-img" src="../assets/prism-logo.jpeg" alt="Prism" width="28" height="28">
+      <span>Prism</span>
+    </a>
+
+    <nav class="topnav">
+      <a class="active" href="index.html">Главная</a>
+      <a href="docs/index.html">Документация</a>
+      <a href="api/index.html">API Reference</a>
+      <a href="https://github.com/ghostfaccee/Prism" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://gitflic.ru/project/ghostfaccee/prism" target="_blank" rel="noopener">GitFlic</a>
+    </nav>
+
+    <button
+      class="theme-toggle"
+      type="button"
+      data-theme-toggle
+      aria-label="Переключить тему">
+      <span class="knob"></span>
+    </button>
+  </div>
+</header>
+
+<main>
+  <section class="hero wrap">
+    <div>
+      <div class="pill">Open source</div>
+
+      <h1>
+        <span class="gradient-text">Prism</span>
+      </h1>
+
+      <p class="lead">
+        <span class="gradient-text">Единый API вместо десятка интеграций. 
+        Экономьте часы разработки на том, что уже сделано.</span>
+      </p>
+
+      <div class="actions">
+        <a class="btn primary" href="docs/index.html">Начать</a>
+        <a class="btn secondary" href="api/index.html">Изучить API</a>
+      </div>
+    </div>
+
+    <div class="terminal">
+      <div class="head">
+        <span>bash</span>
+        <button type="button" data-copy-target="hero-code">Copy</button>
+      </div>
+
+      <pre id="hero-code"><span class="accent">$</span> curl -X GET <span class="green">http://127.0.0.1:8001/v1/</span>
+{ 
+  "detail" : "Welcome to Prism :)" 
+}</pre>
+    </div>
+  </section>
+
+  <section class="section wrap">
+    <div class="kicker">Почему Prism?</div>
+
+    <div class="row">
+      <h2>
+        Всего один слой<br>
+        между вами и данными.
+      </h2>
+      <p>
+        Prism берёт на себя интеграцию с внешними сервисами, jwt-авторизацию, кеширование, 
+        ограничение запросов и другую чепуху - чтобы ваше приложение работало.
+      </p>
+    </div>
+
+    <div class="features">
+      <article>
+        <h3>Единый API</h3>
+        <p>REST-like интерфейс вместо отдельных интеграций.</p>
+      </article>
+
+      <article>
+        <h3>Async first</h3>
+        <p>Асинхронность "из коробки" и удобная работа с внешними сервисами.</p>
+      </article>
+
+      <article>
+        <h3>"Батарейки в комплекте"</h3>
+        <p>Ничего настраивать не надо. Всю рутину Prism берёт на себя.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="section wrap split">
+    <div>
+      <div class="kicker">Quickstart</div>
+
+      <h2>
+        От нуля<br>
+        до API за минуты.
+      </h2>
+
+      <p>
+        Скачайте Prism, установите зависимости и запустите локальный сервер.
+      </p>
+
+      <a class="text" href="docs/index.html">Документация →</a>
+    </div>
+
+    <div class="code">
+      <div class="head">
+        <span>bash</span>
+        <button type="button" data-copy-target="install-code">Copy</button>
+      </div>
+
+      <pre id="install-code"><span class="accent">$</span> git clone https://github.com/ghostfaccee/Prism.git
+<span class="accent">$</span> cd Prism
+<span class="accent">$</span> docker compose --profile prod up --build -d</div></pre>
+  </section>
+
+  <section class="section wrap">
+    <div class="kicker">Prism</div>
+
+    <div class="row">
+      <h2>
+        Развивается<br>
+        с каждым днём.
+      </h2>
+
+      <p>
+        Сейчас проект находится на стадии активной разработки. В планах: больше сервисов, улучшение производительности и многое другое!
+      </p>
+    </div>
+
+    <div class="tool-showcase">
+      <article class="tool-card">
+        <h3>Это больше, чем open source</h3>
+        <p>Вы можете предложить фичи, создавать форки, учавствовать в развитии.</p>
+      </article>
+      <article class="tool-card">
+        <h3>Больше возможностей</h3>
+        <p>Следите за обновлениями!</p>
+      </article>
+    </div>
+  </section>
+</main>
+
+<footer class="footer wrap">
+  <strong>
+    <span>Prism</span>
+  </strong>
+
+  <span>Made with ♥ by ghostfaccee</span>
+
+  <span>Main page</span>
+</footer>
+<script src="assets/js/prism.js"></script>
+</body>
+</html>
