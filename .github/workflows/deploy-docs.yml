@@ -5,7 +5,7 @@ on:
   push:
     branches: ["main"]
     paths:
-      - "website/**" 
+      - "webdocs/**" 
 
   workflow_dispatch:
 

@@ -3,7 +3,6 @@ __pycache__
 celery-info.md
 .venv
 smtp-setup.md
-*.pyc
 alembic.md
 mocks-notes.md
 .pytest_cache
@@ -13,3 +12,4 @@ alembic-tutorial.md
 github-api-work.md
 mocks-tutorial.md
 github-docs-links.txt
+*.pyc
