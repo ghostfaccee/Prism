@@ -4,3 +4,12 @@ celery-info.md
 .venv
 smtp-setup.md
 *.pyc
+alembic.md
+mocks-notes.md
+.pytest_cache
+pytest.md
+refactoring-ideas.md
+alembic-tutorial.md
+github-api-work.md
+mocks-tutorial.md
+github-docs-links.txt
