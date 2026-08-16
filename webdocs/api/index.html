@@ -1,0 +1,1120 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <script>
+    (function () {
+      try {
+        var theme = localStorage.getItem("prism-theme");
+
+        if (theme !== "dark" && theme !== "light") {
+          theme = window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light";
+        }
+
+        document.documentElement.dataset.theme = theme;
+      } catch (error) {
+        document.documentElement.dataset.theme = "light";
+      }
+    })();
+  </script>
+
+  <title>Prism - API Reference</title>
+  <link rel="stylesheet" href="../assets/css/prism.css">
+  <link rel="icon" href="../../assets/prism-logo.jpeg">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="../index.html">
+      <img class="logo-img" src="../../assets/prism-logo.jpeg" alt="Prism" width="28" height="28">
+      <span>Prism</span>
+    </a>
+
+    <nav class="topnav">
+      <a href="../index.html">Главная</a>
+      <a href="../docs/index.html">Документация</a>
+      <a class="active" href="index.html">API Reference</a>
+      <a href="https://github.com/ghostfaccee/Prism" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://gitflic.ru/project/ghostfaccee/prism" target="_blank" rel="noopener">GitFlic</a>
+    </nav>
+
+    <button
+      class="theme-toggle"
+      type="button"
+      data-theme-toggle
+      aria-label="Переключить тему">
+      <span class="knob"></span>
+    </button>
+  </div>
+</header>
+
+<main class="docs-layout">
+  <aside class="side">
+    <div class="sidein">
+      <label>API Reference</label>
+
+      <details open>
+        <summary>Эндпоинты</summary>
+        <details open>
+          <summary>/v1 Эндпоинты</summary>
+          <details>
+            <summary>Главная</summary>
+            <a href="#mainpage">Главная | GET</a>
+          </details>
+          <details>
+            <summary>Authorization</summary>
+            <a href="#register">Регистрация | POST</a>
+            <a href="#login">Вход | POST</a>
+            <a href="#logout">Выход | POST</a>
+            <a href="#refresh">Обновить токен | POST</a>
+          </details>
+          <details>
+            <summary>User</summary>
+            <a href="#meget">Мой профиль | GET</a>
+            <a href="#meupd">Мой профиль | PATCH</a>
+            <a href="#medel">Мой профиль | DELETE</a>
+            <a href="#updpass">Изменить пароль | PATCH</a>
+            <a href="#getuserbyuuid">Получить пользователя по uuid | GET</a>
+            <a href="#getuserbyusername">Получить пользователя по username | GET</a>
+          </details>
+          <details>
+            <summary>Верификация</summary>
+            <a href="#verify">Подтвердить почту | GET</a>
+          </details>
+          <details>
+            <summary>GitHub</summary>
+            <a href="#githublogin">GitHub oauth | GET</a>
+            <a href="#githubcallback">GitHub callback | GET</a>
+            <a href="#githubme">Профиль пользователя GitHub | GET</a>
+            <a href="#githubevents">GitHub-ивенты | GET</a>
+            <a href="#githubrepos">GitHub-репозитории пользователя | GET</a>
+            <a href="#githubrepocommits">GitHub-коммиты в репозитории | GET</a>
+            <a href="#githubrepopulls">GitHub-пул-реквесты в репозитории | GET</a>
+            <a href="#githubrepoissues">GitHub issues в репозитории | GET</a>
+            <a href="#githubfeed">GitHub-лента | GET</a>
+          </details>
+        </details>
+      </details>
+    </div>
+  </aside>
+
+  <article class="doc">
+    <h1>API Reference</h1>
+
+    <p>
+        <strong>Prism</strong> - API для сбора данных из внешних источников и не только. Здесь описаны все эндпоинты на данный момент (16.08.2026 - Prism v1.0).
+    </p>
+
+    <div class="doc-warning">
+        <strong>⚠️ Важно:</strong> Ответы GitHub API в примерах могут быть ошибочными.
+        Рекомендую сверяться с <a href="https://docs.github.com/en/rest?apiVersion=2026-03-10" target="_blank" rel="noopener">официальной документацией GitHub REST API</a>,
+        если вам важна точность и конкретность.
+    </div>
+
+    <h2 id="mainpage">Главная</h2>
+    <p><strong>Тип запроса:</strong> GET</p>
+    <p><strong>Путь:</strong> /v1/</p>
+    <p><strong>Авторизация:</strong> не требует</p>
+    <p><strong>Статус-код:</strong> 200 OK</p>
+    <p><strong>Описание:</strong> простая заглушка, которая всегда возвращает сообщение</p>
+    <p><strong>Формат входных данных:</strong> отсутствует</p>
+    <p><strong>Формат выходных данных:</strong> json</p>
+    <pre><code>// json
+{
+  "detail" : "message"
+}</code></pre>
+
+    <h2 id="register">Регистрация</h2>
+    <p><strong>Тип запроса:</strong> POST</p>
+    <p><strong>Путь:</strong> /v1/auth/register</p>
+    <p><strong>Авторизация:</strong> не требует</p>
+    <p><strong>Статус-код:</strong> 201 CREATED</p>
+    <p><strong>Описание:</strong> создаёт нового пользователя</p>
+    <p><strong>Формат входных данных:</strong> json</p>
+    <pre><code>// json
+{
+    "username" : "your username (required)",
+    "password" : "your password (required)",
+    "email" : "your email (optional)"
+}</code></pre>
+    <p><strong>Формат выходных данных:</strong> json</p>
+    <pre><code>// json
+{
+  "user_id": "your uuid",
+  "username": "your username",
+  "email": "your email",
+  "is_active": true/false
+}</code></pre>
+
+    <h2 id="login">Вход</h2>
+    <p><strong>Тип запроса:</strong> POST</p>
+    <p><strong>Путь:</strong> /v1/auth/login</p>
+    <p><strong>Авторизация:</strong> не требует</p>
+    <p><strong>Статус-код:</strong> 200 OK</p>
+    <p><strong>Описание:</strong> вход в аккаунт</p>
+    <p><strong>Формат входных данных:</strong> json</p>
+    <pre><code>// json
+{
+    "username" : "your username (required)",
+    "password" : "your password (required)"
+}</code></pre>
+    <p><strong>Формат выходных данных:</strong> json</p>
+    <pre><code>// json
+{
+    "access_token": "access token",
+    "refresh_token": "refresh token",
+    "token_type": "token type",
+    "access_token_expires_in_minutes": minutes,
+    "refresh_token_expires_in_days": days
+}</code></pre>
+
+    <h2 id="logout">Выход</h2>
+    <p><strong>Тип запроса:</strong> POST</p>
+    <p><strong>Путь:</strong> /v1/auth/logout</p>
+    <p><strong>Авторизация:</strong> требует jwt-токен в заголовке (см. раздел "Аутентификация" в документации)</p>
+    <p><strong>Статус-код:</strong> 204 NO CONTENT</p>
+    <p><strong>Описание:</strong> выход из аккаунта</p>
+    <p><strong>Формат входных данных:</strong> отсутствует</p>
+    <p><strong>Формат выходных данных:</strong> отсутствует</p>
+
+    <h2 id="refresh">Обновить токен</h2>
+    <p><strong>Тип запроса:</strong> POST</p>
+    <p><strong>Путь:</strong> /v1/auth/refresh</p>
+    <p><strong>Авторизация:</strong> не требует</p>
+    <p><strong>Статус-код:</strong> 200 OK</p>
+    <p><strong>Описание:</strong> обновить access token</p>
+    <p><strong>Формат входных данных:</strong> json</p>
+    <pre><code>// json
+{
+    "refresh_token" : "refresh token (required)",
+}</code></pre>
+    <p><strong>Формат выходных данных:</strong> json</p>
+    <pre><code>// json
+{
+    "access_token": "access token",
+    "refresh_token": "refresh token",
+    "token_type": "token type",
+    "access_token_expires_in_minutes": minutes,
+    "refresh_token_expires_in_days": days
+}</code></pre>
+
+    <h2 id="meget">Мой профиль (get)</h2>
+    <p><strong>Тип запроса:</strong> GET</p>
+    <p><strong>Путь:</strong> /v1/auth/me</p>
+    <p><strong>Авторизация:</strong> требует jwt-токен в заголовке (см. раздел "Аутентификация" в документации)</p>
+    <p><strong>Статус-код:</strong> 200 OK</p>
+    <p><strong>Описание:</strong> получить информацию о профиле текущего пользователя</p>
+    <p><strong>Формат входных данных:</strong> отсутствует</p>
+    <p><strong>Формат выходных данных:</strong> json</p>
+    <pre><code>// json
+{
+  "user_id": "your uuid",
+  "username": "your username",
+  "email": "your email",
+  "is_active": true/false
+}</code></pre>
+
+
+    <h2 id="meupd">Мой профиль (update)</h2>
+    <p><strong>Тип запроса:</strong> PATCH</p>
+    <p><strong>Путь:</strong> /v1/auth/me</p>
+    <p><strong>Авторизация:</strong> требует jwt-токен в заголовке (см. раздел "Аутентификация" в документации)</p>
+    <p><strong>Статус-код:</strong> 200 OK</p>
+    <p><strong>Описание:</strong> обновить информацию профиля текущего пользователя</p>
+    <p><strong>Формат входных данных:</strong> json</p>
+    <pre><code>// json
+{
+    "username" : "username (optional)",
+    "email" : "email (optional)"
+} // если юзернейм - пустая строка или он не указан - он не изменится
+  // если почта - пустая строка, то вернет ошибку валидации, но она не изменится
+  // если почта просто не указана - не изменится</code></pre>
+    <p><strong>Формат выходных данных:</strong> json</p>
+    <pre><code>// json
+{
+  "user_id": "your uuid",
+  "username": "your username",
+  "email": "your email",
+  "is_active": true/false
+}</code></pre>
+
+    <h2 id="medel">Мой профиль (delete)</h2>
+    <p><strong>Тип запроса:</strong> DELETE</p>
+    <p><strong>Путь:</strong> /v1/auth/me</p>
+    <p><strong>Авторизация:</strong> требует jwt-токен в заголовке (см. раздел "Аутентификация" в документации)</p>
+    <p><strong>Статус-код:</strong> 204 NO CONTENT</p>
+    <p><strong>Описание:</strong> удалить аккаунт текущего пользователя</p>
+    <p><strong>Формат входных данных:</strong> отсутствует</p>
+    <p><strong>Формат выходных данных:</strong> отсутствует</p>
+
+    <h2 id="updpass">Изменить пароль</h2>
+    <p><strong>Тип запроса:</strong> PATCH</p>
+    <p><strong>Путь:</strong> /v1/auth/me/password</p>
+    <p><strong>Авторизация:</strong> требует jwt-токен в заголовке (см. раздел "Аутентификация" в документации)</p>
+    <p><strong>Статус-код:</strong> 200 OK</p>
+    <p><strong>Описание:</strong> обновить пароль текущего пользователя</p>
+    <p><strong>Формат входных данных:</strong> json</p>
+    <pre><code>// json
+{
+    "old_pass" : "old password (required)",
+    "new_pass" : "new password (required)"
+}</code></pre>
+    <p><strong>Формат выходных данных:</strong> json</p>
+    <pre><code>// json
+{
+  "user_id": "your uuid",
+  "username": "your username",
+  "email": "your email",
+  "is_active": true/false
+}</code></pre>
+
+    <h2>Получить информацию о другом пользователе</h2>
+    <h3 id="getuserbyuuid">По его uuid</h3>
+    <p><strong>Тип запроса:</strong> GET</p>
+    <p><strong>Путь:</strong> /v1/user/uuid/{user_uuid}</p>
+    <p><strong>Параметры:</strong></p>
+    <li><strong>user_uuid</strong> - uuid пользователя</li>
+    <p><strong>Авторизация:</strong> требует jwt-токен в заголовке (см. раздел "Аутентификация" в документации)</p>
+    <p><strong>Статус-код:</strong> 200 OK</p>
+    <p><strong>Описание:</strong> позволяет получить данные о другом пользователе по его uuid</p>
+    <p><strong>Формат входных данных:</strong> отсутствует</p>
+    <p><strong>Формат выходных данных:</strong> json</p>
+    <pre><code>// json
+{
+  "user_id": "uuid",
+  "username": "username",
+  "email": "email",
+  "is_active": true/false
+}</code></pre>
+
+    <h3 id="getuserbyusername">По его username</h3>
+    <p><strong>Тип запроса:</strong> GET</p>
+    <p><strong>Путь:</strong> /v1/user/username/{username}</p>
+    <p><strong>Параметры:</strong></p>
+    <li><strong>username</strong> - username пользователя</li>
+    <p><strong>Авторизация:</strong> требует jwt-токен в заголовке (см. раздел "Аутентификация" в документации)</p>
+    <p><strong>Статус-код:</strong> 200 OK</p>
+    <p><strong>Описание:</strong> позволяет получить данные о другом пользователе по его username</p>
+    <p><strong>Формат входных данных:</strong> отсутствует</p>
+    <p><strong>Формат выходных данных:</strong> json</p>
+    <pre><code>// json
+{
+  "user_id": "uuid",
+  "username": "username",
+  "email": "email",
+  "is_active": true/false
+}</code></pre>
+
+    <h2 id="verify">Подтверждение электронной почты</h2>
+    <p><strong>Тип запроса:</strong> GET</p>
+    <p><strong>Путь:</strong> /v1/verify/{token}</p>
+    <p><strong>Параметры:</strong></p>
+    <li><strong>token</strong> - token пользователя</li>
+    <p><strong>Авторизация:</strong> требует jwt-токен в заголовке (см. раздел "Аутентификация" в документации)</p>
+    <p><strong>Статус-код:</strong> 200 OK</p>
+    <p><strong>Описание:</strong> позволяет подтвердить электронную почту пользователя</p>
+    <p><strong>Подробнее:</strong> после того, как пользователь указал почту при регистрации или изменил её, на указанную почту отправится письмо со ссылкой, в которой находится сгенерированный токен. Этот токен уникальный и привязан к конкретному пользователю. После перехода по этой ссылке почта пользователя считается подтверждённой, и поле is_active, указывающее, активирован ли пользователь, становится true.</p>
+    <p><strong>Формат входных данных:</strong> отсутствует</p>
+    <p><strong>Формат выходных данных:</strong> json</p>
+    <pre><code>// json
+{
+  "detail" : "message"
+}</code></pre>
+
+    <h2 id="githublogin">GitHub oauth</h2>
+    <p><strong>Тип запроса:</strong> GET</p>
+    <p><strong>Путь:</strong> /v1/github/login</p>
+    <p><strong>Авторизация:</strong> требует jwt-токен в заголовке (см. раздел "Аутентификация" в документации)</p>
+    <p><strong>Статус-код:</strong> 307 TEMPORARY REDIRECT</p>
+    <p><strong>Описание:</strong> перенаправляет пользователя на страницу аутентификации GitHub</p>
+    <p><strong>Подробнее:</strong> создаёт state для защиты от csrf-атак и перенаправляет пользователя по созданной ссылке. После аутентификации по этой ссылке GitHub перенаправит пользователя на эндпоинт /v1/github/callback</p>
+    <p><strong>Формат входных данных:</strong> отсутствует</p>
+    <p><strong>Формат выходных данных:</strong> отсутствует</p>
+
+    <h2 id="githubcallback">GitHub callback</h2>
+    <p><strong>Тип запроса:</strong> GET</p>
+    <p><strong>Путь:</strong> /v1/github/callback</p>
+    <p><strong>Авторизация:</strong> требует jwt-токен в заголовке (см. раздел "Аутентификация" в документации)</p>
+    <p><strong>Статус-код:</strong> 200 OK</p>
+    <p><strong>Описание:</strong> эндпоинт, на который GitHub перенаправляет пользователя после аутентификации</p>
+    <p><strong>Подробнее:</strong> в параметрах запроса будут переданы code и state. Code - краткоживущий код, который Prism обменивает на access_token для дальнейшего использования. Этот access_token используется для запросов к GitHub API. State - код, который генерируется ещё в эндпоинте /v1/github/login и используется для защиты от csrf-атак.</p>
+    <p><strong>Формат входных данных:</strong> отсутствует</p>
+    <p><strong>Формат выходных данных:</strong> json</p>
+    <pre><code>// json
+{
+    "access_token" : "token",
+    "token_type" : "token type",
+    "scope": "scope"
+}</code></pre>
+
+    <h2 id="githubme">Профиль пользователя GitHub</h2>
+    <p><strong>Тип запроса:</strong> GET</p>
+    <p><strong>Путь:</strong> /v1/github/me</p>
+    <p><strong>Авторизация:</strong> требует jwt-токен в заголовке (см. раздел "Аутентификация" в документации)</p>
+    <p><strong>Статус-код:</strong> 200 OK</p>
+    <p><strong>Описание:</strong> получение профиля пользователя на GitHub</p>
+    <p><strong>Формат входных данных:</strong> отсутствует</p>
+    <p><strong>Формат выходных данных:</strong> json</p>
+    <pre><code>// json
+{
+  "login": "login",
+  "name": "name",
+  "email": "email",
+  "avatar_url": "avatar url",
+  "bio": "bio",
+  "public_repos": public_repositories,
+  "followers": followers,
+  "following": following
+}</code></pre>
+
+    <h2 id="githubevents">GitHub-ивенты пользователя</h2>
+    <p><strong>Тип запроса:</strong> GET</p>
+    <p><strong>Путь:</strong> /v1/github/events</p>
+    <p><strong>Авторизация:</strong> требует jwt-токен в заголовке (см. раздел "Аутентификация" в документации)</p>
+    <p><strong>Статус-код:</strong> 200 OK</p>
+    <p><strong>Описание:</strong> получение ивентов пользователя на GitHub</p>
+    <p><strong>Формат входных данных:</strong> отсутствует</p>
+    <p><strong>Формат выходных данных:</strong> json (!!! Обратите внимание, что этот ответ действует только по состоянию на 5 августа 2026 года. Проверьте API GitHub, если хотите точно узнать текущий ответ.)</p>
+    <pre><code>// json
+[
+  {
+    "id": "id",
+    "type": "type",
+    "actor": {
+        "id": id,
+        "login": "login",
+        "display_login": "display login",
+        "gravatar_id": "gravatar id",
+        "url": "url",
+        "avatar_url": "avatar url"
+    },
+    "repo": {
+        "id": id,
+        "name": "name",
+        "url": "url"
+    },
+    "payload": {
+        "repository_id": repository id,
+        "push_id": push id,
+        "ref": "ref",
+        "head": "head",
+        "before": "before"
+    },
+    "public": true/false,
+    "created_at": "created at"
+  }, // etc...
+]</code></pre>
+
+    <h2 id="githubrepos">GitHub-репозитории пользователя</h2>
+    <p><strong>Тип запроса:</strong> GET</p>
+    <p><strong>Путь:</strong> /v1/github/repositories</p>
+    <p><strong>Авторизация:</strong> требует jwt-токен в заголовке (см. раздел "Аутентификация" в документации)</p>
+    <p><strong>Статус-код:</strong> 200 OK</p>
+    <p><strong>Описание:</strong> получение репозиториев пользователя на GitHub</p>
+    <p><strong>Формат входных данных:</strong> отсутствует</p>
+    <p><strong>Формат выходных данных:</strong> json (!!! Обратите внимание, что этот ответ действует только по состоянию на 5 августа 2026 года. Проверьте API GitHub, если хотите точно узнать текущий ответ.)</p>
+    <pre><code>// json
+[
+  {
+    "id": id,
+    "node_id": "node_id",
+    "name": "name",
+    "full_name": "full name",
+    "private": true/false,
+    "owner": {
+        "login": "login",
+        "id": id,
+        "node_id": "node id",
+        "avatar_url": "avatar url",
+        "gravatar_id": "gravatar id",
+        "url": "url",
+        "html_url": "html url",
+        "followers_url": "followers url",
+        "following_url": "following url",
+        "gists_url": "gists url",
+        "starred_url": "starred url",
+        "subscriptions_url": "subscriptions url",
+        "organizations_url": "organizations url",
+        "repos_url": "repos url",
+        "events_url": "events url",
+        "received_events_url": "received events url",
+        "type": "type",
+        "user_view_type": "user view type",
+        "site_admin": true/false
+    },
+    "html_url": "html url",
+    "description": description/null,
+    "fork": true/false,
+    "url": "url",
+    "forks_url": forks url",
+    "keys_url": "keys url",
+    "collaborators_url": "collaborators url",
+    "teams_url": "teams url",
+    "hooks_url": "hooks url",
+    "issue_events_url": "issues url",
+    "events_url": "events url",
+    "assignees_url": "assignees url",
+    "branches_url": "branches url",
+    "tags_url": "tags url",
+    "blobs_url": "blobs url",
+    "git_tags_url": "git tags url",
+    "git_refs_url": "git refs url",
+    "trees_url": "trees url",
+    "statuses_url": "statuses url",
+    "languages_url": "languages url",
+    "stargazers_url": "stargazers url",
+    "contributors_url": "contributors url",
+    "subscribers_url": "subscribers url",
+    "subscription_url": "subscription url",
+    "commits_url": "commits url",
+    "git_commits_url": "git commits url",
+    "comments_url": "comments url",
+    "issue_comment_url": "issue comment url",
+    "contents_url": "contents url",
+    "compare_url": "compare url",
+    "merges_url": "merges url",
+    "archive_url": "archive url",
+    "downloads_url": "downloads url",
+    "issues_url": "issues url",
+    "pulls_url": "pulls url",
+    "milestones_url": "milestones url",
+    "notifications_url": "notifications url",
+    "labels_url": "labels url",
+    "releases_url": "releases url",
+    "deployments_url": "deployments url",
+    "created_at": "created at",
+    "updated_at": "updated at",
+    "pushed_at": "pushed at",
+    "git_url": "git url",
+    "ssh_url": "ssh url",
+    "clone_url": "clone url",
+    "svn_url": "svn url",
+    "homepage": homepage/null,
+    "size": size,
+    "stargazers_count": stargazers count,
+    "watchers_count": watchers count,
+    "language": "language",
+    "has_issues": true/false,
+    "has_projects": true/false,
+    "has_downloads": true/false,
+    "has_wiki": true/false,
+    "has_pages": true/false,
+    "has_discussions": true/false,
+    "forks_count": forks count,
+    "mirror_url": mirror url/null,
+    "archived": true/false,
+    "disabled": true/false,
+    "open_issues_count": open issues count,
+    "license": license/null,
+    "allow_forking": true/false,
+    "is_template": true/false,
+    "web_commit_signoff_required": true/false,
+    "has_pull_requests": true/false,
+    "pull_request_creation_policy": "pull request creation policy",
+    "topics": topics,
+    "visibility": "visibility",
+    "forks": forks,
+    "open_issues": open issues,
+    "watchers": watchers,
+    "default_branch": "default branch",
+    "permissions": {
+        "admin": true/false,
+        "maintain": true/false,
+        "push": true/false,
+        "triage": true/false,
+        "pull": true/false
+    }
+  }, // etc...
+]</code></pre>
+
+
+    <h2 id="githubrepocommits">GitHub-коммиты в репозитории</h2>
+    <p><strong>Тип запроса:</strong> GET</p>
+    <p><strong>Путь:</strong> /v1/github/{repo}/commits</p>
+    <p><strong>Параметры:</strong></p>
+    <li><strong>repo</strong> - название репозитория (например, prism), регистр не важен</li>
+    <p><strong>Авторизация:</strong> требует jwt-токен в заголовке (см. раздел "Аутентификация" в документации)</p>
+    <p><strong>Статус-код:</strong> 200 OK</p>
+    <p><strong>Описание:</strong> получение коммитов в репозитории на GitHub</p>
+    <p><strong>Формат входных данных:</strong> отсутствует</p>
+    <p><strong>Формат выходных данных:</strong> json (!!! Обратите внимание, что этот ответ действует только по состоянию на 5 августа 2026 года. Проверьте API GitHub, если хотите точно узнать текущий ответ.)</p>
+    <pre><code>// json
+[
+  {
+    "sha": "sha",
+    "node_id": "node id",
+    "commit": {
+        "author": {
+            "name": "name",
+            "email": "email",
+            "date": "date"
+        },
+        "committer": {
+            "name": "name",
+            "email": "email",
+            "date": "date"
+        },
+        "message": "message",
+        "tree": {
+            "sha": "sha",
+            "url": "url"
+        },
+        "url": "url",
+        "comment_count": comment count,
+        "verification": {
+            "verified": true/false,
+            "reason": "reason",
+            "signature": signature,
+            "payload": payload,
+            "verified_at": verified at
+        }
+    },
+    "url": "url",
+    "html_url": "html url",
+    "comments_url": "comment url",
+    "author": {
+        "login": "login",
+        "id": id,
+        "node_id": "node id",
+        "avatar_url": "avatar url",
+        "gravatar_id": "gravatar url",
+        "url": "url",
+        "html_url": "html url",
+        "followers_url": "followers url",
+        "following_url": "following url",
+        "gists_url": "gists url",
+        "starred_url": "starred url",
+        "subscriptions_url": "subscriptions url",
+        "organizations_url": "organizations url",
+        "repos_url": "repos url",
+        "events_url": "events url",
+        "received_events_url": "received events url",
+        "type": "type",
+        "user_view_type": "user view type",
+        "site_admin": true/false
+    },
+    "committer": {
+        "login": "login",
+        "id": id,
+        "node_id": "node id",
+        "avatar_url": "avatar url",
+        "gravatar_id": "gravatar id",
+        "url": "url",
+        "html_url": "html url",
+        "followers_url": "followers url",
+        "following_url": "following url",
+        "gists_url": "gists url",
+        "starred_url": "starred url",
+        "subscriptions_url": "subscriptions url",
+        "organizations_url": "organizations url",
+        "repos_url": "repositories url",
+        "events_url": "events url",
+        "received_events_url": "received events url",
+        "type": "type",
+        "user_view_type": "user view type",
+        "site_admin": true/false
+    },
+    "parents": [
+        {
+            "sha": "sha",
+            "url": "url",
+            "html_url": "html url"
+        }
+    ]
+  }
+]</code></pre>
+
+    <h2 id="githubrepopulls">GitHub-пул-реквесты в репозитории</h2>
+    <p><strong>Тип запроса:</strong> GET</p>
+    <p><strong>Путь:</strong> /v1/github/{repo}/pulls</p>
+    <p><strong>Параметры:</strong></p>
+    <li><strong>repo</strong> - название репозитория (например, prism), регистр не важен</li>
+    <p><strong>Авторизация:</strong> требует jwt-токен в заголовке (см. раздел "Аутентификация" в документации)</p>
+    <p><strong>Статус-код:</strong> 200 OK</p>
+    <p><strong>Описание:</strong> получение пул-реквестов в репозитории на GitHub</p>
+    <p><strong>Формат входных данных:</strong> отсутствует</p>
+    <p><strong>Формат выходных данных:</strong> json (!!! Обратите внимание, что этот ответ действует только по состоянию на 5 августа 2026 года. Проверьте API GitHub, если хотите точно узнать текущий ответ.)</p>
+    <pre><code>// json
+[
+    {
+        "url": "url",
+        "id": id,
+        "node_id": "node id",
+        "html_url": "html url",
+        "diff_url": "diff url",
+        "patch_url": "patch url",
+        "issue_url": "issue url",
+        "number": number,
+        "state": "state",
+        "locked": true/false,
+        "title": "title",
+        "user": {
+            "login": "user",
+            "id": id,
+            "node_id": "node id",
+            "avatar_url": "avatar url",
+            "gravatar_id": "gravatar url",
+            "url": "url",
+            "html_url": "html url",
+            "followers_url": "followers url",
+            "following_url": "following url",
+            "gists_url": "gists url",
+            "starred_url": "starred url",
+            "subscriptions_url": "subscriptions url",
+            "organizations_url": "organizations url",
+            "repos_url": "repos url",
+            "events_url": "events url",
+            "received_events_url": "received events url",
+            "type": "type",
+            "user_view_type": "user view type",
+            "site_admin": true/false
+        },
+        "body": body,
+        "created_at": "created at",
+        "updated_at": "updated at",
+        "closed_at": "closed at",
+        "merged_at": merged at,
+        "merge_commit_sha": merge commit sha,
+        "assignees": assignees,
+        "requested_reviewers": requested reviewers,
+        "requested_teams": requested teams,
+        "labels": labels,
+        "milestone": milestone,
+        "draft": true/false,
+        "commits_url": "commits url",
+        "review_comments_url": "review comments url",
+        "review_comment_url": "review comment url",
+        "comments_url": "comments url",
+        "statuses_url": "statuses url",
+        "head": {
+            "label": "label",
+            "ref": "ref",
+            "sha": "sha",
+            "user": {
+                "login": "login",
+                "id": id,
+                "node_id": "node id",
+                "avatar_url": "avatar url",
+                "gravatar_id": "gravatar id",
+                "url": "url",
+                "html_url": "html url",
+                "followers_url": "followers url",
+                "following_url": "following url",
+                "gists_url": "gists url",
+                "starred_url": "starred url",
+                "subscriptions_url": "subscriptions url",
+                "organizations_url": "organizations url",
+                "repos_url": "repositories url",
+                "events_url": "events url",
+                "received_events_url": "received events url",
+                "type": "type",
+                "user_view_type": "user view type",
+                "site_admin": true/false
+            },
+            "repo": {
+                "id": id,
+                "node_id": "node id",
+                "name": "name",
+                "full_name": "full name",
+                "private": true/false,
+                "owner": {
+                    "login": "login",
+                    "id": id,
+                    "node_id": "node id",
+                    "avatar_url": "avatar url",
+                    "gravatar_id": "gravatar id",
+                    "url": "url",
+                    "html_url": "html url",
+                    "followers_url": "followers url",
+                    "following_url": "following url",
+                    "gists_url": "gists url",
+                    "starred_url": "starred url",
+                    "subscriptions_url": "subscriptions url",
+                    "organizations_url": "organizations url",
+                    "repos_url": "repos url",
+                    "events_url": "events url",
+                    "received_events_url": "received events url",
+                    "type": "type",
+                    "user_view_type": "user view type",
+                    "site_admin": true/false
+                },
+                "html_url": "html url",
+                "description": description/null,
+                "fork": true/false,
+                "url": "url",
+                "forks_url": "forks url",
+                "keys_url": "keys url",
+                "collaborators_url": "collaborators url",
+                "teams_url": "teams url",
+                "hooks_url": "hooks url",
+                "issue_events_url": "issue events url",
+                "events_url": "events url",
+                "assignees_url": "assignees url",
+                "branches_url": "branches url",
+                "tags_url": "tags url",
+                "blobs_url": "blobs url",
+                "git_tags_url": "git tags url",
+                "git_refs_url": "git refs url",
+                "trees_url": "trees url",
+                "statuses_url": "statuses url",
+                "languages_url": "languages url",
+                "stargazers_url": "stargazers url",
+                "contributors_url": "contributors url",
+                "subscribers_url": "subscribers url",
+                "subscription_url": "subscription url",
+                "commits_url": "commits url",
+                "git_commits_url": "git commits url",
+                "comments_url": "comments url",
+                "issue_comment_url": "issue comment url",
+                "contents_url": "contents url",
+                "compare_url": "compare url",
+                "merges_url": "merges url",
+                "archive_url": "archive url",
+                "downloads_url": "downloads url",
+                "issues_url": "issues url",
+                "pulls_url": "pulls url",
+                "milestones_url": "milestones url",
+                "notifications_url": "notifications url",
+                "labels_url": "labels url",
+                "releases_url": "releases url",
+                "deployments_url": "deployments url",
+                "created_at": "created at",
+                "updated_at": "updated at",
+                "pushed_at": "pushed at",
+                "git_url": "git url",
+                "ssh_url": "ssh url",
+                "clone_url": "clone url",
+                "size": size,
+                "stargazers_count": stargazers count,
+                "watchers_count": watchers count,
+                "language": language/null,
+                "has_issues": true/false,
+                "has_projects": true/false,
+                "has_downloads": true/false,
+                "has_wiki": true/false,
+                "has_pages": true/false,
+                "has_discussions": true/false,
+                "forks_count": forks count,
+                "mirror_url": mirror url/null,
+                "archived": true/false,
+                "disabled": true/false,
+                "open_issues_count": open issues count,
+                "license": license/null,
+                "allow_forking": true/false,
+                "is_template": true/false,
+                "web_commit_signoff_required": true/false,
+                "has_pull_requests": true/false,
+                "pull_request_creation_policy": "pull request creation policy",
+                "topics": topics,
+                "visibility": "visibility",
+                "forks": forks,
+                "open_issues": open issues,
+                "watchers": watchers,
+                "default_branch": "default branch"
+            }
+        },
+        "base": {
+            "label": "label",
+            "ref": "ref",
+            "sha": "sha",
+            "user": {
+                "login": "login",
+                "id": id,
+                "node_id": "node id",
+                "avatar_url": "avatar url",
+                "gravatar_id": "gravatar id",
+                "url": "url",
+                "following_url": "following url",
+                "gists_url": "gists url",
+                "starred_url": "starred url",
+                "subscriptions_url": "subscriptions url",
+                "organizations_url": "organizations url",
+                "repos_url": "repositories url",
+                "events_url": "events url",
+                "received_events_url": "received events url",
+                "type": "type",
+                "user_view_type": "user view type",
+                "site_admin": true/false
+            },
+            "repo": {
+                "id": id,
+                "node_id": "node id",
+                "name": "name",
+                "full_name": "full name",
+                "private": true/false,
+                "owner": {
+                    "login": "login",
+                    "id": id,
+                    "node_id": "node id",
+                    "avatar_url": "avatar url",
+                    "gravatar_id": "gravatar id",
+                    "url": "url",
+                    "following_url": "following url",
+                    "gists_url": "gists url",
+                    "starred_url": "starred url",
+                    "subscriptions_url": "subscriptions url",
+                    "organizations_url": "organizations url",
+                    "repos_url": "repositories url",
+                    "events_url": "events url",
+                    "received_events_url": "received events url",
+                    "type": "type",
+                    "user_view_type": "user view type",
+                    "site_admin": true/false
+                },
+                "html_url": "html url",
+                "fork": true/false,
+                "url": "url",
+                "forks_url": "forks url",
+                "keys_url": "keys url",
+                "collaborators_url": "collaborators url",
+                "teams_url": "teams url",
+                "hooks_url": "hooks url",
+                "issue_events_url": "issue events url",
+                "events_url": "events url",
+                "assignees_url": "assignees url",
+                "branches_url": "branches url",
+                "tags_url": "tags url",
+                "blobs_url": "blobs url",
+                "git_tags_url": "git tags url",
+                "git_refs_url": "git refs url",
+                "trees_url": "trees url",
+                "statuses_url": "statuses url",
+                "languages_url": "languages url",
+                "stargazers_url": "stargazers url",
+                "contributors_url": "contributors url",
+                "subscribers_url": "subscribers url",
+                "subscription_url": "subscription url",
+                "commits_url": "commits url",
+                "git_commits_url": "git commits url",
+                "comments_url": "comments url",
+                "issue_comment_url": "issue comment url",
+                "contents_url": "contents url",
+                "compare_url": "compare url",
+                "merges_url": "merges url",
+                "archive_url": "archive url",
+                "downloads_url": "downloads url",
+                "issues_url": "issues url",
+                "pulls_url": "pulls url",
+                "milestones_url": "milestones url",
+                "notifications_url": "notifications url",
+                "labels_url": "labels url",
+                "releases_url": "releases url",
+                "deployments_url": "deployments url",
+                "created_at": "created at",
+                "updated_at": "updated at",
+                "pushed_at": "pushed at",
+                "git_url": "git url",
+                "ssh_url": "ssh url",
+                "clone_url": "clone url",
+                "size": size,
+                "stargazers_count": stargazers count,
+                "watchers_count": watchers count,
+                "language": language/null,
+                "has_issues": true/false,
+                "has_projects": true/false,
+                "has_downloads": true/false,
+                "has_wiki": true/false,
+                "has_pages": true/false,
+                "has_discussions": true/false,
+                "forks_count": forks count,
+                "mirror_url": mirror url/null,
+                "archived": true/false,
+                "disabled": true/false,
+                "open_issues_count": open issues count,
+                "license": license/null,
+                "allow_forking": true/false,
+                "is_template": true/false,
+                "web_commit_signoff_required": true/false,
+                "has_pull_requests": true/false,
+                "pull_request_creation_policy": "pull request creation policy",
+                "topics": topics,
+                "visibility": "visibility",
+                "forks": forks,
+                "open_issues": open issues,
+                "watchers": watchers,
+                "default_branch": "default branch"
+            }
+        },
+        "_links": {
+            "self": {
+                "href": "href"
+            },
+            "html": {
+                "href": "href"
+            },
+            "issue": {
+                "href": "href"
+            },
+            "comments": {
+                "href": "href"
+            },
+            "review_comments": {
+                "href": "href"
+            },
+            "review_comment": {
+                "href": "href"
+            },
+            "commits": {
+                "href": "href"
+            },
+            "statuses": {
+                "href": "href"
+            }
+        },
+        "author_association": "author association",
+        "auto_merge": auto merge/null,
+        "assignee": assignee/null,
+        "active_lock_reason": active lock reason/null
+    }
+]</code></pre>
+
+
+    <h2 id="githubrepoissues">GitHub issues в репозитории</h2>
+    <p><strong>Тип запроса:</strong> GET</p>
+    <p><strong>Путь:</strong> /v1/github/{repo}/issues</p>
+    <p><strong>Параметры:</strong></p>
+    <li><strong>repo</strong> - название репозитория (например, prism), регистр не важен</li>
+    <p><strong>Авторизация:</strong> требует jwt-токен в заголовке (см. раздел "Аутентификация" в документации)</p>
+    <p><strong>Статус-код:</strong> 200 OK</p>
+    <p><strong>Описание:</strong> получение issues в репозитории на GitHub</p>
+    <p><strong>Формат входных данных:</strong> отсутствует</p>
+    <p><strong>Формат выходных данных:</strong> json (!!! Обратите внимание, что этот ответ действует только по состоянию на 5 августа 2026 года. Проверьте API GitHub, если хотите точно узнать текущий ответ.)</p>
+    <pre><code>// json
+[
+    {
+        "url": "url",
+        "repository_url": "repository url",
+        "labels_url": "labels url",
+        "comments_url": "comments url",
+        "events_url": "events url",
+        "html_url": "html url",
+        "id": id,
+        "node_id": "node id",
+        "number": number,
+        "title": "title",
+        "user": {
+            "login": "login",
+            "id": id,
+            "node_id": "node id",
+            "avatar_url": "avatar url",
+            "gravatar_id": "gravatar id",
+            "url": "url",
+            "html_url": "html url",
+            "followers_url": "followers url",
+            "following_url": "following url",
+            "gists_url": "gists url",
+            "starred_url": "starred url",
+            "subscriptions_url": "subscriptions url",
+            "organizations_url": "organizations url",
+            "repos_url": "repos url",
+            "events_url": "events url",
+            "received_events_url": "received events url",
+            "type": "type",
+            "user_view_type": "user view type",
+            "site_admin": true/false
+        },
+        "labels": labels,
+        "state": "state",
+        "locked": true/false,
+        "assignees": assignees,
+        "milestone": milestone/null,
+        "comments": comments,
+        "created_at": "created at",
+        "updated_at": "updated at",
+        "closed_at": "closed at",
+        "assignee": assignee/null,
+        "author_association": "author association",
+        "active_lock_reason": active lock reason/null,
+        "draft": true/false,
+        "pull_request": {
+            "url": "url",
+            "html_url": "html url",
+            "diff_url": "diff url",
+            "patch_url": "patch url",
+            "merged_at": merged at/null
+        },
+        "body": body/null,
+        "closed_by": {
+            "login": "login",
+            "id": id,
+            "node_id": "node id",
+            "avatar_url": "avatar url",
+            "gravatar_id": "gravatar id",
+            "url": "url",
+            "html_url": "html url",
+            "followers_url": "followers url",
+            "following_url": "following url",
+            "gists_url": "gists url",
+            "starred_url": "starred url",
+            "subscriptions_url": "subscriptions url",
+            "organizations_url": "organizations url",
+            "repos_url": "repos url",
+            "events_url": "events url",
+            "received_events_url": "received events url",
+            "type": "type",
+            "user_view_type": "user view type",
+            "site_admin": true/false
+        },
+        "reactions": {
+            "url": "url",
+            "total_count": total count,
+            "+1": +1,
+            "-1": -1,
+            "laugh": laugh,
+            "hooray": hooray,
+            "confused": confused,
+            "heart": heart,
+            "rocket": rocket,
+            "eyes": eyes
+        },
+        "timeline_url": "timeline url",
+        "performed_via_github_app": performed via github app/null,
+        "state_reason": state reason/null
+    }
+]</code></pre>
+
+    <h2 id="githubfeed">GitHub-лента</h2>
+    <p><strong>Тип запроса:</strong> GET</p>
+    <p><strong>Путь:</strong> /v1/github/feed</p>
+    <p><strong>Параметры:</strong></p>
+    <p><strong>Авторизация:</strong> требует jwt-токен в заголовке (см. раздел "Аутентификация" в документации)</p>
+    <p><strong>Статус-код:</strong> 200 OK</p>
+    <p><strong>Описание:</strong> получение Prism-ленты с GitHub</p>
+    <p><strong>Формат входных данных:</strong> отсутствует</p>
+    <p><strong>Формат выходных данных:</strong> json (!!! Обратите внимание, что этот ответ действует только по состоянию на 5 августа 2026 года. Проверьте API GitHub, если хотите точно узнать текущий ответ.)</p>
+    <pre><code>// json
+{
+  "events": [
+    "events (the structure is already indicated above)"
+  ],
+  "commits": [
+    "commits (the structure is already indicated above)"
+  ],
+  "pull_requests": [
+    "pulls (the structure is already indicated above)"
+  ],
+  "issues": [
+    "issues (the structure is already indicated above)"
+  ],
+  "total_count": total count
+}</code></pre>
+  </article>
+</main>
+
+<footer class="footer wrap">
+  <strong>
+    <span>Prism</span>
+  </strong>
+
+  <span>Made with ♥ by ghostfaccee</span>
+
+  <span>API Reference</span>
+</footer>
+<script src="../assets/js/prism.js"></script>
+</body>
+</html>
