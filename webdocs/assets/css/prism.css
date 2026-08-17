@@ -888,11 +888,22 @@ pre {
   }
 
   .actions {
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
   }
 
   .btn {
-    width: 100%;
+    width: auto;
+    flex: 0 1 auto;
+    min-width: 100px;
+    padding: 8px 14px;
+    font-size: 13px;
+    min-height: 38px;
+  }
+
+  .hero .lead {
+    font-size: 15px;
   }
 }
 
