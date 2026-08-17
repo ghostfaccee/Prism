@@ -2,7 +2,7 @@ from pydantic import ConfigDict, Field
 from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
-    POSTGRES_URL: str = 'postgres url'
+    POSTGRES_URL: str = 'postgres-url'
 
     TEST_POSTGRES_URL: str = Field(...)
 
