@@ -1,0 +1,33 @@
+name: Docker Image
+
+on:
+  push:
+    branches: [ "main", "v1-dev" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v6
+      
+    - name: Run docker compose
+      run: |
+        docker compose --profile test up -d --build
+        sleep 20
+      env:
+        POSTGRES_USER: ${{ secrets.TEST_POSTGRES_USER }}
+        POSTGRES_PASSWORD: ${{ secrets.TEST_POSTGRES_PASSWORD }}
+        POSTGRES_DB: ${{ secrets.TEST_POSTGRES_DB }}
+
+    - name: Show API logs
+      run: |
+        docker logs testapi --tail 50
+        
+    - name: Check container is running
+      run: |
+        docker ps | grep testapi
