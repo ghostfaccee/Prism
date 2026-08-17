@@ -3,6 +3,10 @@
   <img src="assets/prism-logo.jpeg" alt="Prism" width="400">
 </div>
 
+[![Docker containers checks](https://github.com/ghostfaccee/Prism/actions/workflows/containers.yml/badge.svg)](https://github.com/ghostfaccee/Prism/actions/workflows/containers.yml)
+[![Pytests check | CI](https://github.com/ghostfaccee/Prism/actions/workflows/ci.yml/badge.svg)](https://github.com/ghostfaccee/Prism/actions/workflows/ci.yml)
+[![Deploy static content to Pages](https://github.com/ghostfaccee/Prism/actions/workflows/deploy-docs.yml/badge.svg)](https://github.com/ghostfaccee/Prism/actions/workflows/deploy-docs.yml)
+
 **Event aggregator for developers.**
 
 [![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=fff)](#)
