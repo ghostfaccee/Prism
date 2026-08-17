@@ -19,6 +19,9 @@ jobs:
         TEST_POSTGRES_URL=${{ secrets.TEST_POSTGRES_URL }}
         REDIS_URL=${{ secrets.REDIS_URL }}
         DEBUG=True
+        TEST_POSTGRES_USER=${{secrets.TEST_POSTGRES_USER}}
+        TEST_POSTGRES_PASSWORD=${{secrets.TEST_POSTGRES_PASSWORD}}
+        TEST_POSTGRES_DB=${{secrets.TEST_POSTGRES_DB}}
         EOF
       
     - name: Run docker compose
