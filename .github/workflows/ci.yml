@@ -18,6 +18,7 @@ jobs:
         cat > .env << EOF
         TEST_POSTGRES_URL=${{ secrets.TEST_POSTGRES_URL }}
         REDIS_URL=${{ secrets.REDIS_URL }}
+        DEBUG=True
         EOF
       
     - name: Run docker compose
