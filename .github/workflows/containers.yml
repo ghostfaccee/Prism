@@ -20,14 +20,15 @@ jobs:
         docker compose --profile test up -d --build
         sleep 20
       env:
-        POSTGRES_USER: ${{ secrets.TEST_POSTGRES_USER }}
-        POSTGRES_PASSWORD: ${{ secrets.TEST_POSTGRES_PASSWORD }}
-        POSTGRES_DB: ${{ secrets.TEST_POSTGRES_DB }}
+        TEST_POSTGRES_USER: ${{ secrets.TEST_POSTGRES_USER }}
+        TEST_POSTGRES_PASSWORD: ${{ secrets.TEST_POSTGRES_PASSWORD }}
+        TEST_POSTGRES_DB: ${{ secrets.TEST_POSTGRES_DB }}
+        TEST_POSTGRES_URL: ${{ secrets.TEST_POSTGRES_URL }}
 
     - name: Show API logs
       run: |
-        docker logs testapi --tail 50
+        docker logs testprism --tail 50
         
     - name: Check container is running
       run: |
-        docker ps | grep testapi
+        docker ps | grep testprism
