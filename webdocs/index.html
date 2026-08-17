@@ -142,7 +142,8 @@
 
       <pre id="install-code"><span class="accent">$</span> git clone https://github.com/ghostfaccee/Prism.git
 <span class="accent">$</span> cd Prism
-<span class="accent">$</span> docker compose --profile prod up --build -d</div></pre>
+<span class="accent">$</span> docker compose --profile prod up --build -d
+<span class="accent">$</span> docker compose exec api alembic upgrade head</div></pre>
   </section>
 
   <section class="section wrap">

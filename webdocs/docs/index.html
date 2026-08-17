@@ -95,7 +95,9 @@ git clone https://github.com/ghostfaccee/Prism.git
 # Шаг 2: Перейти в директорию проекта
 cd Prism
 # Шаг 3: Запустить локально при помощи Docker
-docker compose --profile prod up --build -d</code></pre>
+docker compose --profile prod up --build -d
+# Шаг 4: Применение миграций (существующих в проекте)
+docker compose exec api alembic upgrade head</code></pre>
 
       <p>После запуска API будет доступно по адресу <code>http://127.0.0.1:8000</code>.</p>
     </section>
