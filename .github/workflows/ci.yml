@@ -1,0 +1,42 @@
+name: Tests check | CI
+
+on:
+  push:
+    branches: [ "main", "v1-dev" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v6
+
+    - name: Create .env file
+      run: |
+        cat > .env << EOF
+        TEST_POSTGRES_URL=${{ secrets.TEST_POSTGRES_URL }}
+        REDIS_URL=${{ secrets.REDIS_URL }}
+        EOF
+      
+    - name: Run docker compose
+      run: |
+        docker compose --profile test up -d --build
+        sleep 20
+
+    - name: Show API logs
+      run: |
+        docker logs testprism --tail 50
+        
+    - name: Run tests
+      run: |
+        docker exec testprism pytest -v
+        
+    - name: Check container is running
+      run: |
+        docker ps | grep testprism
+        
+    - name: Stop and remove containers
+      run: |
+        docker compose --profile test down -v
