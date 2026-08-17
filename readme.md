@@ -3,6 +3,10 @@
   <img src="assets/prism-logo.jpeg" alt="Prism" width="400">
 </div>
 
+[![Docker containers checks](https://github.com/ghostfaccee/Prism/actions/workflows/containers.yml/badge.svg)](https://github.com/ghostfaccee/Prism/actions/workflows/containers.yml)
+[![Pytests check | CI](https://github.com/ghostfaccee/Prism/actions/workflows/ci.yml/badge.svg)](https://github.com/ghostfaccee/Prism/actions/workflows/ci.yml)
+[![Deploy static content to Pages](https://github.com/ghostfaccee/Prism/actions/workflows/deploy-docs.yml/badge.svg)](https://github.com/ghostfaccee/Prism/actions/workflows/deploy-docs.yml)
+
 **Event aggregator for developers.**
 
 [![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=fff)](#)
@@ -24,7 +28,7 @@ docker compose --profile prod up --build -d
 
 You can view the documentation at `http://127.0.0.1:8000/docs` or `http://127.0.0.1:8000/redoc` when the container is running.
 
-Also you can view documentation at the [link](...)
+Also you can view documentation at the [link](https://ghostfaccee.github.io/Prism/docs/index.html)
 
 ## Stop container 
 ```
@@ -33,7 +37,7 @@ docker compose --profile prod down -v # with database drop
 
 ## More
 
-* You can view the project's business card at the [link](...)
+* You can view the project's business card at the [link](https://ghostfaccee.github.io/Prism/)
 * You can view the launch guide at `docs/launch-guide.md`
 
 ## License

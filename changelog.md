@@ -53,6 +53,12 @@
 - rate limits for endpoints
 - more tests
 - the event feed, commits, pull requests, and much more
+  
+## v1.0.0 - 17.08.2026
+# Added
+- web-documentation
+- new endpoints
+- github actions
 
 ## to be continued :)
 ...
