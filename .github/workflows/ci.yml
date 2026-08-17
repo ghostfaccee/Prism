@@ -24,7 +24,7 @@ jobs:
     - name: Run docker compose
       run: |
         docker compose --profile test up -d --build
-        sleep 20
+        sleep 60
 
     - name: Show API logs
       run: |
