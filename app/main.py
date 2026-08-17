@@ -11,8 +11,6 @@ from app.core import engine, Base, logger, RedisClient
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator:
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
     await (await RedisClient.get_client()).ping()
     logger.info('Prism started')
     yield
